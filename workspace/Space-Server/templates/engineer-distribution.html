@@ -161,6 +161,7 @@
     }
             function testIncreasePower(system) {
             socket.send("increasepower: " + system)
+            console.log('as;dlfjkasdkl;fj');
         }
     function testDecreasePower(system) {
         socket.send("decreasepower: " + system)
@@ -177,7 +178,7 @@
     <h1 class="retro">Main Computer Offline</h1>
     <h1 class="retro">Please Do The Following Damage Report</h1>
     <h3 class="retro">Step 1: Activate The Main Computer Override On The S.I.L.V.E.R. Panel</h3> 
-    <h3 class="retro">Step 2: Enter The Following Code Main Computer Code On The S.I.L.V.E.R. Panel: 0, 0, 0, 0</h3> 
+    <h3 class="retro">Step 2: Enter The Following Main Computer Code On The S.I.L.V.E.R. Panel: 0, 0, 0, 0</h3> 
     <h3 class="retro">Step 3: Press And Hold The Main Computer Purge Button On The S.I.L.V.E.R. Panel For 60 seconds</h3> 
     <h3 class="retro">Step 4: Activate The Main Reactor Bypass On The S.I.L.V.E.R. Panel</h3> 
     <h3 class="retro">Step 5: Deactivate The Main Computer Override On The S.I.L.V.E.R. Panel</h3> 
@@ -223,8 +224,8 @@
         <input class="form-control" id="warpenginepower" disabled="" type="text">
             <br>
         <div class="btn-group btn-group-justified">
-            <a onclick="testIncreasePower('Warp Engines');" class="btn btn-default">Increase Power To System</a>
             <a onclick="testDecreasePower('Warp Engines');" class="btn btn-default">Decrease Power To System</a>
+            <a onclick="testIncreasePower('Warp Engines');" class="btn btn-default">Increase Power To System</a>
         </div>
         <br>
         <label class="col-lg-2 control-label">Impulse Engines</label>
@@ -234,8 +235,8 @@
         <input class="form-control" id="impulseenginepower" disabled="" type="text">
             <br>
             <div class="btn-group btn-group-justified">
-                <a onclick="testIncreasePower('Impulse Engines');" class="btn btn-default">Increase Power To System</a>
                 <a onclick="testDecreasePower('Impulse Engines');" class="btn btn-default">Decrease Power To System</a>
+                <a onclick="testIncreasePower('Impulse Engines');" class="btn btn-default">Increase Power To System</a>
             </div>
             <br>
             <label class="col-lg-2 control-label">Thrusters</label>
@@ -245,8 +246,8 @@
             <input class="form-control" id="thrusterpower" disabled="" type="text">
                 <br>
                 <div class="btn-group btn-group-justified">
-                    <a onclick="testIncreasePower('Thrusters');" class="btn btn-default">Increase Power To System</a>
                     <a onclick="testDecreasePower('Thrusters');" class="btn btn-default">Decrease Power To System</a>
+                    <a onclick="testIncreasePower('Thrusters');" class="btn btn-default">Increase Power To System</a>
                 </div>
                 <br>
                 
@@ -257,8 +258,8 @@
         <input class="form-control" id="maincomputerpower" disabled="" type="text">
             <br>
         <div class="btn-group btn-group-justified">
-            <a onclick="testIncreasePower('Main Computer');" class="btn btn-default">Increase Power To System</a>
             <a onclick="testDecreasePower('Main Computer');" class="btn btn-default">Decrease Power To System</a>
+            <a onclick="testIncreasePower('Main Computer');" class="btn btn-default">Increase Power To System</a>
         </div>
         <br>
         <label class="col-lg-2 control-label">Life Support</label>
@@ -268,8 +269,8 @@
         <input class="form-control" id="lifesuppportpower" disabled="" type="text">
             <br>
             <div class="btn-group btn-group-justified">
-                <a onclick="testIncreasePower('Life Support');" class="btn btn-default">Increase Power To System</a>
                 <a onclick="testDecreasePower('Life Support');" class="btn btn-default">Decrease Power To System</a>
+                <a onclick="testIncreasePower('Life Support');" class="btn btn-default">Increase Power To System</a>
             </div>
             <br>
             <label class="col-lg-2 control-label">Weapons Systems</label>
@@ -279,8 +280,8 @@
             <input class="form-control" id="weaponssystempower" disabled="" type="text">
                 <br>
                 <div class="btn-group btn-group-justified">
-                    <a onclick="testIncreasePower('Weapons');" class="btn btn-default">Increase Power To System</a>
                     <a onclick="testDecreasePower('Weapons');" class="btn btn-default">Decrease Power To System</a>
+                    <a onclick="testIncreasePower('Weapons');" class="btn btn-default">Increase Power To System</a>
                 </div>
                 <br>
                 <label class="col-lg-2 control-label">Tractor Beam</label>
@@ -290,8 +291,8 @@
                 <input class="form-control" id="tractorbeampower" disabled="" type="text">
                     <br>
                     <div class="btn-group btn-group-justified">
-                        <a onclick="testIncreasePower('Tractor Beam');" class="btn btn-default">Increase Power To System</a>
                         <a onclick="testDecreasePower('Tractor Beam');" class="btn btn-default">Decrease Power To System</a>
+                        <a onclick="testIncreasePower('Tractor Beam');" class="btn btn-default">Increase Power To System</a>
                     </div>
                     <br>
                     <label class="col-lg-2 control-label">Cloaking Device</label>
@@ -301,8 +302,8 @@
                     <input class="form-control" id="cloakingdevicepower" disabled="" type="text">
                         <br>
                         <div class="btn-group btn-group-justified">
-                            <a onclick="testIncreasePower('Cloaking Device');" class="btn btn-default">Increase Power To System</a>
                             <a onclick="testDecreasePower('Cloaking Device');" class="btn btn-default">Decrease Power To System</a>
+                            <a onclick="testIncreasePower('Cloaking Device');" class="btn btn-default">Increase Power To System</a>
                         </div>
                         <br>
                         <label class="col-lg-2 control-label">Transporters</label>
@@ -312,8 +313,8 @@
                         <input class="form-control" id="transporterspower" disabled="" type="text">
                             <br>
                             <div class="btn-group btn-group-justified">
-                                <a onclick="testIncreasePower('Transporters');" class="btn btn-default">Increase Power To System</a>
                                 <a onclick="testDecreasePower('Transporters');" class="btn btn-default">Decrease Power To System</a>
+                                <a onclick="testIncreasePower('Transporters');" class="btn btn-default">Increase Power To System</a>
                             </div>
                             <br>
         <label class="col-lg-2 control-label">Total Power In Use</label>

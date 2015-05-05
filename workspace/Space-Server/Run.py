@@ -284,15 +284,6 @@ def handle_message(message):
             send("warpenginepower: " + warpEnginePower, broadcast=True)
             print warpEnginePower
             warpEnginePower = int(warpEnginePower)
-    if message.startswith("coursescan: "):
-        send(message, broadcast=True)
-        scanningForCourse = True
-        courseScanAnswered = False
-        courseTo = message[12:]
-    if message == "cancelcoursescan":
-        send(message, broadcast=True)
-        scanningForCourse = False
-        courseTo = ""
         if message == "Impulse Engines":
             impulseEnginePower = impulseEnginePower + 25
             if impulseEnginePower > 100:
@@ -431,6 +422,15 @@ def handle_message(message):
             send("transporterpower: " + transporterPower, broadcast=True)
             print transporterPower
             transporterPower = int(transporterPower)
+    if message.startswith("coursescan: "):
+        send(message, broadcast=True)
+        scanningForCourse = True
+        courseScanAnswered = False
+        courseTo = message[12:]
+    if message == "cancelcoursescan":
+        send(message, broadcast=True)
+        scanningForCourse = False
+        courseTo = ""
     if message.startswith("decreasecoolant: "):
         message = message[17:]
         if message == "Weapons System":

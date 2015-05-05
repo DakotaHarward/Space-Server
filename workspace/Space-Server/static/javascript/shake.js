@@ -5,8 +5,8 @@ function offline(){
         hideSomething('EVERYTHING')
         showSomething('computermalfunction')
         willstop = false;
-    if(willstop){magnitude += 3;}
-    else{magnitude = 3;}
+    if(willstop){magnitude += 6;}
+    else{magnitude = 6;}
     clearInterval(shake);
     shake = setInterval(function(){doshake()},100);
       }
