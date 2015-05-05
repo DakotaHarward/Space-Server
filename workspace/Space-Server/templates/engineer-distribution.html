@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Space Server</title>
+    <link rel="stylesheet" href="../static/css/spaceserver.css">
+  <link rel="stylesheet" href="http://bootswatch.com/cyborg/bootstrap.css">
+    <script src="../static/javascript/shake.js"></script>
+    <script src="../static/javascript/jquery-1.11.1.min.js"></script>
+    <script src="../static/javascript/socketio.min.js"></script>
+    <script src="../static/javascript/jquery-2.1.3.min.js"></script>
+    <script type="text/javascript">
+       if (typeof String.prototype.startsWith != 'function') {
+  // see below for better implementation!
+  String.prototype.startsWith = function (str){
+    return this.indexOf(str) == 0;
+  };
+}
+        var width;
+        var warpEnginePower;
+        var mainComputerPower;
+        var totalPower = 200;
+    var engineerLoggedIn = "no";
+    var engineerFakeName = "Not Logged In";
+    var engineerName = "Not Logged In";
+    var socket = io.connect('http://' +window.location.hostname+ ':' +window.location.port+ '/main');
+        function signOut() {
+        location.href = ('index.html')
+        }
+        function showSomething(id) {
+        document.getElementById(id).style.display = 'block';
+        }
+        function hideSomething(id) {
+        document.getElementById(id).style.display = 'none';
+        }
+        socket.on('message', function(data) {
+        console.log(data);
+          if(data == "reloadstations"){
+            location.href = ('engineer-distribution.html');
+          }
+        if(data.startsWith("engineertaken: ")) {
+        engineerLoggedIn = "yes";
+        engineerFakeName = data;
+        engineerName = engineerFakeName.replace("engineertaken: ", "");
+        console.log(engineerName)
+        }
+        if(data.startsWith("warpenginepower: ")) {
+        data = data.replace("warpenginepower: ", "");
+        document.getElementById('warpengines').style.width = data+'%';
+        document.getElementById('warpenginepower').value = data;
+                  document.getElementById('totalpowerinuse').value = parseInt(document.getElementById('warpenginepower').value) + parseInt(document.getElementById('maincomputerpower').value) + parseInt(document.getElementById('impulseenginepower').value) + parseInt(document.getElementById('thrusterpower').value) + parseInt(document.getElementById('lifesuppportpower').value) + parseInt(document.getElementById('weaponssystempower').value) + parseInt(document.getElementById('tractorbeampower').value) + parseInt(document.getElementById('cloakingdevicepower').value) + parseInt(document.getElementById('transporterspower').value);
+        }
+                  if(data.startsWith("impulseenginepower: ")) {
+                  data = data.replace("impulseenginepower: ", "");
+                  document.getElementById('impulseengines').style.width = data+'%';
+                  document.getElementById('impulseenginepower').value = data;
+                  document.getElementById('totalpowerinuse').value = parseInt(document.getElementById('warpenginepower').value) + parseInt(document.getElementById('maincomputerpower').value) + parseInt(document.getElementById('impulseenginepower').value) + parseInt(document.getElementById('thrusterpower').value) + parseInt(document.getElementById('lifesuppportpower').value) + parseInt(document.getElementById('weaponssystempower').value) + parseInt(document.getElementById('tractorbeampower').value) + parseInt(document.getElementById('cloakingdevicepower').value) + parseInt(document.getElementById('transporterspower').value);
+                  }
+                  if(data.startsWith("thrusterpower: ")) {
+                  data = data.replace("thrusterpower: ", "");
+                  document.getElementById('thrusters').style.width = data+'%';
+                  document.getElementById('thrusterpower').value = data;
+                  document.getElementById('totalpowerinuse').value = parseInt(document.getElementById('warpenginepower').value) + parseInt(document.getElementById('maincomputerpower').value) + parseInt(document.getElementById('impulseenginepower').value) + parseInt(document.getElementById('thrusterpower').value) + parseInt(document.getElementById('lifesuppportpower').value) + parseInt(document.getElementById('weaponssystempower').value) + parseInt(document.getElementById('tractorbeampower').value) + parseInt(document.getElementById('cloakingdevicepower').value) + parseInt(document.getElementById('transporterspower').value);
+                  }
+                  if(data.startsWith("lifesupportpower: ")) {
+                  data = data.replace("lifesupportpower: ", "");
+                  document.getElementById('lifesupport').style.width = data+'%';
+                  document.getElementById('lifesuppportpower').value = data;
+                  document.getElementById('totalpowerinuse').value = parseInt(document.getElementById('warpenginepower').value) + parseInt(document.getElementById('maincomputerpower').value) + parseInt(document.getElementById('impulseenginepower').value) + parseInt(document.getElementById('thrusterpower').value) + parseInt(document.getElementById('lifesuppportpower').value) + parseInt(document.getElementById('weaponssystempower').value) + parseInt(document.getElementById('tractorbeampower').value) + parseInt(document.getElementById('cloakingdevicepower').value) + parseInt(document.getElementById('transporterspower').value);
+                  }
+                  if(data.startsWith("weaponssystempower: ")) {
+                  data = data.replace("weaponssystempower: ", "");
+                  document.getElementById('weaponssystem').style.width = data+'%';
+                  document.getElementById('weaponssystempower').value = data;
+                  document.getElementById('totalpowerinuse').value = parseInt(document.getElementById('warpenginepower').value) + parseInt(document.getElementById('maincomputerpower').value) + parseInt(document.getElementById('impulseenginepower').value) + parseInt(document.getElementById('thrusterpower').value) + parseInt(document.getElementById('lifesuppportpower').value) + parseInt(document.getElementById('weaponssystempower').value) + parseInt(document.getElementById('tractorbeampower').value) + parseInt(document.getElementById('cloakingdevicepower').value) + parseInt(document.getElementById('transporterspower').value);
+                  }
+                  if(data.startsWith("tractorbeampower: ")) {
+                  data = data.replace("tractorbeampower: ", "");
+                  document.getElementById('tractorbeam').style.width = data+'%';
+                  document.getElementById('tractorbeampower').value = data;
+                  document.getElementById('totalpowerinuse').value = parseInt(document.getElementById('warpenginepower').value) + parseInt(document.getElementById('maincomputerpower').value) + parseInt(document.getElementById('impulseenginepower').value) + parseInt(document.getElementById('thrusterpower').value) + parseInt(document.getElementById('lifesuppportpower').value) + parseInt(document.getElementById('weaponssystempower').value) + parseInt(document.getElementById('tractorbeampower').value) + parseInt(document.getElementById('cloakingdevicepower').value) + parseInt(document.getElementById('transporterspower').value);
+                  }
+                  if(data.startsWith("cloakingdevicepower: ")) {
+                  data = data.replace("cloakingdevicepower: ", "");
+                  document.getElementById('cloakingdevice').style.width = data+'%';
+                  document.getElementById('cloakingdevicepower').value = data;
+                  document.getElementById('totalpowerinuse').value = parseInt(document.getElementById('warpenginepower').value) + parseInt(document.getElementById('maincomputerpower').value) + parseInt(document.getElementById('impulseenginepower').value) + parseInt(document.getElementById('thrusterpower').value) + parseInt(document.getElementById('lifesuppportpower').value) + parseInt(document.getElementById('weaponssystempower').value) + parseInt(document.getElementById('tractorbeampower').value) + parseInt(document.getElementById('cloakingdevicepower').value) + parseInt(document.getElementById('transporterspower').value);
+                  }
+                  if(data.startsWith("transporterpower: ")) {
+                  data = data.replace("transporterpower: ", "");
+                  document.getElementById('transporters').style.width = data+'%';
+                  document.getElementById('transporterspower').value = data;
+                  document.getElementById('totalpowerinuse').value = parseInt(document.getElementById('warpenginepower').value) + parseInt(document.getElementById('maincomputerpower').value) + parseInt(document.getElementById('impulseenginepower').value) + parseInt(document.getElementById('thrusterpower').value) + parseInt(document.getElementById('lifesuppportpower').value) + parseInt(document.getElementById('weaponssystempower').value) + parseInt(document.getElementById('tractorbeampower').value) + parseInt(document.getElementById('cloakingdevicepower').value) + parseInt(document.getElementById('transporterspower').value);
+                  }
+                  if(data.startsWith("maincomputerpower: ")) {
+                  data = data.replace("maincomputerpower: ", "");
+                  document.getElementById('maincomputer').style.width = data+'%';
+                  document.getElementById('maincomputerpower').value = data;
+                  document.getElementById('totalpowerinuse').value = parseInt(document.getElementById('warpenginepower').value) + parseInt(document.getElementById('maincomputerpower').value) + parseInt(document.getElementById('impulseenginepower').value) + parseInt(document.getElementById('thrusterpower').value) + parseInt(document.getElementById('lifesuppportpower').value) + parseInt(document.getElementById('weaponssystempower').value) + parseInt(document.getElementById('tractorbeampower').value) + parseInt(document.getElementById('cloakingdevicepower').value) + parseInt(document.getElementById('transporterspower').value);
+                  }
+                  if(data.startsWith("powerlevel: ")) {
+                  document.getElementById('currentpowerlevel').value = data.replace("powerlevel: ", "");
+                  }
+                  if(data.startsWith("weaponsheat: ")) {
+                  data = data.replace("weaponsheat: ", "");
+                  document.getElementById('weaponsheat').style.width = data+'%';
+                  console.log("heat increased")
+                  }
+                  if(data.startsWith("weaponscoolant: ")) {
+                  data = data.replace("weaponscoolant: ", "");
+                  document.getElementById('weaponscoolant').style.width = data+'%'
+                  }
+                  if(data.startsWith("engineheat: ")) {
+                  data = data.replace("engineheat: ", "");
+                  document.getElementById('engineheat').style.width = data+'%';
+                  }
+                  if(data.startsWith("enginecoolant: ")) {
+                  data = data.replace("enginecoolant: ", "");
+                  document.getElementById('enginecoolant').style.width = data+'%'
+                  }
+          if(data == "blackout: engineering") {
+            hideSomething('EVERYTHING')
+          }
+          if(data == "blackout: all") {
+            hideSomething('EVERYTHING')
+          }
+          if(data == "unblackout: engineering") {
+            showSomething('EVERYTHING')
+          }
+          if(data== "unblackout: all") {
+            showSomething('EVERYTHING')
+          }
+          if(data == "maincomputeroffline"){
+            offline()
+          }
+          if(data == "maincomputeronline"){
+            online()
+          }
+        });
+        function start() {
+        hideSomething('noconnection')
+        hideSomething('coolantdistributiontabs')
+        hideSomething('coolantdistributiontabcontent')
+        hideSomething('computermalfunction')
+        showSomething('powerdistributiontabs')
+        showSomething('powerdistributiontabcontent')
+        showSomething('EVERYTHING')
+        totalPower = warpEnginePower + mainComputerPower;
+        document.getElementById('totalpowerinuse').value = totalPower;
+        }
+    function goToPowerDistribution() {
+        hideSomething('coolantdistributiontabs')
+        hideSomething('coolantdistributiontabcontent')
+        showSomething('powerdistributiontabs')
+        showSomething('powerdistributiontabcontent')
+    }
+    function goToCoolantDistribution() {
+        hideSomething('powerdistributiontabs')
+        hideSomething('powerdistributiontabcontent')
+        showSomething('coolantdistributiontabs')
+        showSomething('coolantdistributiontabcontent')
+    }
+            function testIncreasePower(system) {
+            socket.send("increasepower: " + system)
+        }
+    function testDecreasePower(system) {
+        socket.send("decreasepower: " + system)
+    }
+    function flushCoolant(system) {
+        socket.send("decreasecoolant: " + system)
+    }
+    </script>
+</head>
+
+
+<body bgcolor="black" onload="start()">
+  <div id="computermalfunction" class="container1">
+    <h1 class="retro">Main Computer Offline</h1>
+    <h1 class="retro">Please Do The Following Damage Report</h1>
+    <h3 class="retro">Step 1: Activate The Main Computer Override On The S.I.L.V.E.R. Panel</h3> 
+    <h3 class="retro">Step 2: Enter The Following Code Main Computer Code On The S.I.L.V.E.R. Panel: 0, 0, 0, 0</h3> 
+    <h3 class="retro">Step 3: Press And Hold The Main Computer Purge Button On The S.I.L.V.E.R. Panel For 60 seconds</h3> 
+    <h3 class="retro">Step 4: Activate The Main Reactor Bypass On The S.I.L.V.E.R. Panel</h3> 
+    <h3 class="retro">Step 5: Deactivate The Main Computer Override On The S.I.L.V.E.R. Panel</h3> 
+    <h3 class="retro">Step 6: Deactivate The Main Reactor Bypass On The S.I.L.V.E.R. Panel</h3> 
+      </div>
+  <div id="EVERYTHING" style="margin: 10px;">
+<div id="noconnection" class="alert alert-dismissable alert-warning">
+        <button type="button" class="close" onclick="hideSomething('noconnection')">x</button>
+        <h4>No Connection To Server!</h4>
+        <p>Sadly there is no connection to the server. Ask for assistance from your flight director or try again later.</p>
+    </div>
+<div class="navbar navbar-default">
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="engineer.html">Engineer</a>
+  </div>
+  <div class="navbar-collapse collapse navbar-responsive-collapse">
+    <ul class="nav navbar-nav">
+      <li><a href="engineer.html">Damage Control</a></li>
+      <li class="active"><a href="engineer-distribution.html">Distribtion</a></li>
+      <li><a href="engineer-reactor-monitoring.html">Reactor Monitoring</a></li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="index.html" onclick="signOut()">Sign Out</a></li>
+    </ul>
+  </div>
+</div>
+<ul id="powerdistributiontabs" class="nav nav-tabs">
+    <li class="active"><a onclick="goToPowerDistribution()" data-toggle="tab">Power Distribution</a></li>
+    <li><a onclick="goToCoolantDistribution()" data-toggle="tab">Coolant Distribution</a></li>
+</ul>
+<div id="powerdistributiontabcontent" class="tab-content">
+    <div class="tab-pane fade active in">
+        <p>
+        <label class="col-lg-2 control-label">Warp Engines</label>
+        <div class="progress progress-striped active">
+            <div id="warpengines" class="progress-bar" style="width: 100%;"></div>
+        </div>
+        <input class="form-control" id="warpenginepower" disabled="" type="text">
+            <br>
+        <div class="btn-group btn-group-justified">
+            <a onclick="testIncreasePower('Warp Engines');" class="btn btn-default">Increase Power To System</a>
+            <a onclick="testDecreasePower('Warp Engines');" class="btn btn-default">Decrease Power To System</a>
+        </div>
+        <br>
+        <label class="col-lg-2 control-label">Impulse Engines</label>
+        <div class="progress progress-striped active">
+            <div id="impulseengines" class="progress-bar" style="width: 100%;"></div>
+        </div>
+        <input class="form-control" id="impulseenginepower" disabled="" type="text">
+            <br>
+            <div class="btn-group btn-group-justified">
+                <a onclick="testIncreasePower('Impulse Engines');" class="btn btn-default">Increase Power To System</a>
+                <a onclick="testDecreasePower('Impulse Engines');" class="btn btn-default">Decrease Power To System</a>
+            </div>
+            <br>
+            <label class="col-lg-2 control-label">Thrusters</label>
+            <div class="progress progress-striped active">
+                <div id="thrusters" class="progress-bar" style="width: 100%;"></div>
+            </div>
+            <input class="form-control" id="thrusterpower" disabled="" type="text">
+                <br>
+                <div class="btn-group btn-group-justified">
+                    <a onclick="testIncreasePower('Thrusters');" class="btn btn-default">Increase Power To System</a>
+                    <a onclick="testDecreasePower('Thrusters');" class="btn btn-default">Decrease Power To System</a>
+                </div>
+                <br>
+                
+        <label class="col-lg-2 control-label">Main Computer</label>
+        <div class="progress progress-striped active">
+            <div id="maincomputer" class="progress-bar" style="width: 100%;"></div>
+        </div>
+        <input class="form-control" id="maincomputerpower" disabled="" type="text">
+            <br>
+        <div class="btn-group btn-group-justified">
+            <a onclick="testIncreasePower('Main Computer');" class="btn btn-default">Increase Power To System</a>
+            <a onclick="testDecreasePower('Main Computer');" class="btn btn-default">Decrease Power To System</a>
+        </div>
+        <br>
+        <label class="col-lg-2 control-label">Life Support</label>
+        <div class="progress progress-striped active">
+            <div id="lifesupport" class="progress-bar" style="width: 100%;"></div>
+        </div>
+        <input class="form-control" id="lifesuppportpower" disabled="" type="text">
+            <br>
+            <div class="btn-group btn-group-justified">
+                <a onclick="testIncreasePower('Life Support');" class="btn btn-default">Increase Power To System</a>
+                <a onclick="testDecreasePower('Life Support');" class="btn btn-default">Decrease Power To System</a>
+            </div>
+            <br>
+            <label class="col-lg-2 control-label">Weapons Systems</label>
+            <div class="progress progress-striped active">
+                <div id="weaponssystem" class="progress-bar" style="width: 100%;"></div>
+            </div>
+            <input class="form-control" id="weaponssystempower" disabled="" type="text">
+                <br>
+                <div class="btn-group btn-group-justified">
+                    <a onclick="testIncreasePower('Weapons');" class="btn btn-default">Increase Power To System</a>
+                    <a onclick="testDecreasePower('Weapons');" class="btn btn-default">Decrease Power To System</a>
+                </div>
+                <br>
+                <label class="col-lg-2 control-label">Tractor Beam</label>
+                <div class="progress progress-striped active">
+                    <div id="tractorbeam" class="progress-bar" style="width: 100%;"></div>
+                </div>
+                <input class="form-control" id="tractorbeampower" disabled="" type="text">
+                    <br>
+                    <div class="btn-group btn-group-justified">
+                        <a onclick="testIncreasePower('Tractor Beam');" class="btn btn-default">Increase Power To System</a>
+                        <a onclick="testDecreasePower('Tractor Beam');" class="btn btn-default">Decrease Power To System</a>
+                    </div>
+                    <br>
+                    <label class="col-lg-2 control-label">Cloaking Device</label>
+                    <div class="progress progress-striped active">
+                        <div id="cloakingdevice" class="progress-bar" style="width: 100%;"></div>
+                    </div>
+                    <input class="form-control" id="cloakingdevicepower" disabled="" type="text">
+                        <br>
+                        <div class="btn-group btn-group-justified">
+                            <a onclick="testIncreasePower('Cloaking Device');" class="btn btn-default">Increase Power To System</a>
+                            <a onclick="testDecreasePower('Cloaking Device');" class="btn btn-default">Decrease Power To System</a>
+                        </div>
+                        <br>
+                        <label class="col-lg-2 control-label">Transporters</label>
+                        <div class="progress progress-striped active">
+                            <div id="transporters" class="progress-bar" style="width: 100%;"></div>
+                        </div>
+                        <input class="form-control" id="transporterspower" disabled="" type="text">
+                            <br>
+                            <div class="btn-group btn-group-justified">
+                                <a onclick="testIncreasePower('Transporters');" class="btn btn-default">Increase Power To System</a>
+                                <a onclick="testDecreasePower('Transporters');" class="btn btn-default">Decrease Power To System</a>
+                            </div>
+                            <br>
+        <label class="col-lg-2 control-label">Total Power In Use</label>
+        <input class="form-control" id="totalpowerinuse" disabled="" type="text">
+            <br>
+            <label class="col-lg-2 control-label">Total Power Available</label>
+            <input class="form-control" id="currentpowerlevel" disabled="" type="text"></p>
+    </div>
+</div>
+<ul id="coolantdistributiontabs" class="nav nav-tabs">
+    <li><a onclick="goToPowerDistribution()" data-toggle="tab">Power Distribution</a></li>
+    <li class="active"><a onclick="goToCoolantDistribution()" data-toggle="tab">Coolant Distribution</a></li>
+</ul>
+<div id="coolantdistributiontabcontent" class="tab-content">
+    <br>
+    <label class="col-lg-2 control-label">Weapons Coolant Control</label>
+    <div class="progress">
+        <div class="progress-bar progress-bar-success" id="weaponscoolant" style="width: 100%"></div>
+        <div class="progress-bar progress-bar-danger" id="weaponsheat" style="width: 0%"></div>
+    </div>
+    <a class="btn btn-default btn-lg btn-block" onclick="flushCoolant('Weapons System')">Flush Coolant</a>
+    <br>
+    <label class="col-lg-2 control-label">Engine Coolant Control</label>
+    <div class="progress">
+        <div class="progress-bar progress-bar-success" id="enginecoolant" style="width: 100%"></div>
+        <div class="progress-bar progress-bar-danger" id="engineheat" style="width: 0%"></div>
+    </div>
+    <a class="btn btn-default btn-lg btn-block" onclick="flushCoolant('Engine System')">Flush Coolant</a>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,8 @@
+@font-face { font-family: OldComputer; src: url('../media/OldComputer.ttf'); }
+div.container1 {
+    position: absolute;
+}
+h1.retro,
+h3.retro {
+   font-family: OldComputer
+}

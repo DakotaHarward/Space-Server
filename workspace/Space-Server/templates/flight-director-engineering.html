@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Space Server</title>
+  <link rel="stylesheet" href="http://bootswatch.com/cyborg/bootstrap.css">
+  <script src="../static/javascript/jquery-1.11.1.min.js"></script>
+  <script src="../static/javascript/socketio.min.js"></script>
+  <script type="text/javascript">
+    if (typeof String.prototype.startsWith != 'function'){
+      String.prototype.startsWith = function (str){
+        return this.indexOf(str) == 0;
+      };
+    }
+    var engineerLoggedIn = "no";
+    var engineerFakeName = "Not Logged In";
+    var engineerName = "Not Logged In";
+    var remoteCode;
+    var select;
+    var option;
+    var fakeBrokenSystem;
+    var brokenSystem;
+    var brokenSystems = document.getElementById('brokensystems');
+    var value;
+    var systemName;
+      function signOut() {
+        location.href = ('index.html')
+      }
+      function showSomething(id) {
+        document.getElementById(id).style.display = 'block';
+      }
+      function hideSomething(id) {
+        document.getElementById(id).style.display = 'none';
+      }
+      var socket = io.connect('http://' +window.location.hostname+ ':' +window.location.port+ '/main');
+      socket.on('message', function(data) {
+      console.log(data);
+      if(data == "connected"){
+        showSomething('shipstarted');
+      }
+      else if(data == "connected missionyes"){
+        showSomething('shipstarted');
+      }
+      if(data.startsWith("engineertaken: ")){
+        engineerLoggedIn = "yes";
+        engineerFakeName = data;
+        engineerName = engineerFakeName.replace("engineertaken: ", "");
+        console.log(engineerName)
+        document.getElementById('engineername').value = engineerName;
+      }
+      if(data.startsWith("brokensystem: ")) {
+        fakeBrokenSystem = data;
+        brokenSystem = fakeBrokenSystem.replace("brokensystem: ", "");
+        console.log(brokenSystem)
+        select = document.getElementById('brokensystems');
+        option = document.createElement("option");
+        option.text = brokenSystem;
+        select.add(option);
+      }
+      if(data == "predamage") {
+        document.getElementById('brokensystems').options.length = 0;
+        console.log("asldkjfa;lskdjf")
+      }
+      if(data.startsWith("remoterepaircode: ")) {
+        remoteCode = data.replace("remoterepaircode: ", "");
+        document.getElementById('remoterepaircode').value = remoteCode;
+      }
+      if(data.startsWith("warpenginepower: ")) {
+        document.getElementById('warpenginepowerbadge').innerHTML = data.replace("warpenginepower: ", "");
+        document.getElementById('totalpowerinusebadge').innerHTML = parseInt(document.getElementById('warpenginepowerbadge').innerHTML) + parseInt(document.getElementById('impulseenginepowerbadge').innerHTML) + parseInt(document.getElementById('thrusterpowerbadge').innerHTML) + parseInt(document.getElementById('maincomputerpowerbadge').innerHTML) + parseInt(document.getElementById('lifesupportpowerbadge').innerHTML) + parseInt(document.getElementById('weaponspowerbadge').innerHTML) + parseInt(document.getElementById('tractorbeampowerbadge').innerHTML) + parseInt(document.getElementById('cloakingdevicepowerbadge').innerHTML) + parseInt(document.getElementById('transporterspowerbadge').innerHTML);
+      }
+      if(data.startsWith("impulseenginepower: ")) {
+        document.getElementById('impulseenginepowerbadge').innerHTML = data.replace("impulseenginepower: ", "");
+        document.getElementById('totalpowerinusebadge').innerHTML = parseInt(document.getElementById('warpenginepowerbadge').innerHTML) + parseInt(document.getElementById('impulseenginepowerbadge').innerHTML) + parseInt(document.getElementById('thrusterpowerbadge').innerHTML) + parseInt(document.getElementById('maincomputerpowerbadge').innerHTML) + parseInt(document.getElementById('lifesupportpowerbadge').innerHTML) + parseInt(document.getElementById('weaponspowerbadge').innerHTML) + parseInt(document.getElementById('tractorbeampowerbadge').innerHTML) + parseInt(document.getElementById('cloakingdevicepowerbadge').innerHTML) + parseInt(document.getElementById('transporterspowerbadge').innerHTML);
+        }
+      if(data.startsWith("thrusterpower: ")) {
+        document.getElementById('thrusterpowerbadge').innerHTML = data.replace("thrusterpower: ", "");
+        document.getElementById('totalpowerinusebadge').innerHTML = parseInt(document.getElementById('warpenginepowerbadge').innerHTML) + parseInt(document.getElementById('impulseenginepowerbadge').innerHTML) + parseInt(document.getElementById('thrusterpowerbadge').innerHTML) + parseInt(document.getElementById('maincomputerpowerbadge').innerHTML) + parseInt(document.getElementById('lifesupportpowerbadge').innerHTML) + parseInt(document.getElementById('weaponspowerbadge').innerHTML) + parseInt(document.getElementById('tractorbeampowerbadge').innerHTML) + parseInt(document.getElementById('cloakingdevicepowerbadge').innerHTML) + parseInt(document.getElementById('transporterspowerbadge').innerHTML);
+        }
+      if(data.startsWith("maincomputerpower: ")) {
+        document.getElementById('maincomputerpowerbadge').innerHTML = data.replace("maincomputerpower: ", "");
+        document.getElementById('totalpowerinusebadge').innerHTML = parseInt(document.getElementById('warpenginepowerbadge').innerHTML) + parseInt(document.getElementById('impulseenginepowerbadge').innerHTML) + parseInt(document.getElementById('thrusterpowerbadge').innerHTML) + parseInt(document.getElementById('maincomputerpowerbadge').innerHTML) + parseInt(document.getElementById('lifesupportpowerbadge').innerHTML) + parseInt(document.getElementById('weaponspowerbadge').innerHTML) + parseInt(document.getElementById('tractorbeampowerbadge').innerHTML) + parseInt(document.getElementById('cloakingdevicepowerbadge').innerHTML) + parseInt(document.getElementById('transporterspowerbadge').innerHTML);
+        }
+                  if(data.startsWith("lifesupportpower: ")) {
+                  document.getElementById('lifesupportpowerbadge').innerHTML = data.replace("lifesupportpower: ", "");
+                  document.getElementById('totalpowerinusebadge').innerHTML = parseInt(document.getElementById('warpenginepowerbadge').innerHTML) + parseInt(document.getElementById('impulseenginepowerbadge').innerHTML) + parseInt(document.getElementById('thrusterpowerbadge').innerHTML) + parseInt(document.getElementById('maincomputerpowerbadge').innerHTML) + parseInt(document.getElementById('lifesupportpowerbadge').innerHTML) + parseInt(document.getElementById('weaponspowerbadge').innerHTML) + parseInt(document.getElementById('tractorbeampowerbadge').innerHTML) + parseInt(document.getElementById('cloakingdevicepowerbadge').innerHTML) + parseInt(document.getElementById('transporterspowerbadge').innerHTML);
+                  }
+                  if(data.startsWith("weaponssystempower: ")) {
+                  document.getElementById('weaponspowerbadge').innerHTML = data.replace("weaponssystempower: ", "");
+                  document.getElementById('totalpowerinusebadge').innerHTML = parseInt(document.getElementById('warpenginepowerbadge').innerHTML) + parseInt(document.getElementById('impulseenginepowerbadge').innerHTML) + parseInt(document.getElementById('thrusterpowerbadge').innerHTML) + parseInt(document.getElementById('maincomputerpowerbadge').innerHTML) + parseInt(document.getElementById('lifesupportpowerbadge').innerHTML) + parseInt(document.getElementById('weaponspowerbadge').innerHTML) + parseInt(document.getElementById('tractorbeampowerbadge').innerHTML) + parseInt(document.getElementById('cloakingdevicepowerbadge').innerHTML) + parseInt(document.getElementById('transporterspowerbadge').innerHTML);
+                  }
+                  if(data.startsWith("tractorbeampower: ")) {
+                  document.getElementById('tractorbeampowerbadge').innerHTML = data.replace("tractorbeampower: ", "");
+                  document.getElementById('totalpowerinusebadge').innerHTML = parseInt(document.getElementById('warpenginepowerbadge').innerHTML) + parseInt(document.getElementById('impulseenginepowerbadge').innerHTML) + parseInt(document.getElementById('thrusterpowerbadge').innerHTML) + parseInt(document.getElementById('maincomputerpowerbadge').innerHTML) + parseInt(document.getElementById('lifesupportpowerbadge').innerHTML) + parseInt(document.getElementById('weaponspowerbadge').innerHTML) + parseInt(document.getElementById('tractorbeampowerbadge').innerHTML) + parseInt(document.getElementById('cloakingdevicepowerbadge').innerHTML) + parseInt(document.getElementById('transporterspowerbadge').innerHTML);
+                  }
+                  if(data.startsWith("cloakingdevicepower: ")) {
+                  document.getElementById('cloakingdevicepowerbadge').innerHTML = data.replace("cloakingdevicepower: ", "");
+                  document.getElementById('totalpowerinusebadge').innerHTML = parseInt(document.getElementById('warpenginepowerbadge').innerHTML) + parseInt(document.getElementById('impulseenginepowerbadge').innerHTML) + parseInt(document.getElementById('thrusterpowerbadge').innerHTML) + parseInt(document.getElementById('maincomputerpowerbadge').innerHTML) + parseInt(document.getElementById('lifesupportpowerbadge').innerHTML) + parseInt(document.getElementById('weaponspowerbadge').innerHTML) + parseInt(document.getElementById('tractorbeampowerbadge').innerHTML) + parseInt(document.getElementById('cloakingdevicepowerbadge').innerHTML) + parseInt(document.getElementById('transporterspowerbadge').innerHTML);
+                  }
+                  if(data.startsWith("transporterpower: ")) {
+                  document.getElementById('transporterspowerbadge').innerHTML = data.replace("transporterpower: ", "");
+                  document.getElementById('totalpowerinusebadge').innerHTML = parseInt(document.getElementById('warpenginepowerbadge').innerHTML) + parseInt(document.getElementById('impulseenginepowerbadge').innerHTML) + parseInt(document.getElementById('thrusterpowerbadge').innerHTML) + parseInt(document.getElementById('maincomputerpowerbadge').innerHTML) + parseInt(document.getElementById('lifesupportpowerbadge').innerHTML) + parseInt(document.getElementById('weaponspowerbadge').innerHTML) + parseInt(document.getElementById('tractorbeampowerbadge').innerHTML) + parseInt(document.getElementById('cloakingdevicepowerbadge').innerHTML) + parseInt(document.getElementById('transporterspowerbadge').innerHTML);
+                  }
+                  if(data.startsWith("powerlevel: ")) {
+                  document.getElementById('availablepower').innerHTML = data.replace("powerlevel: ", "");
+                  }
+                  if(data.startsWith("weaponscoolant: ")) {
+                  document.getElementById('availablweaponscoolant').innerHTML = data.replace("weaponscoolant: ", "");
+                  }
+                  if(data.startsWith("weaponsheat: ")) {
+                  document.getElementById('weaponsheat').innerHTML = data.replace("weaponsheat: ", "");
+                  }
+                  if(data.startsWith("enginecoolant: ")) {
+                  document.getElementById('availableenginecoolant').innerHTML = data.replace("enginecoolant: ", "");
+                  }
+                  if(data.startsWith("engineheat: ")) {
+                  document.getElementById('engineheat').innerHTML = data.replace("engineheat: ", "");
+                  }
+                  if(data == "ejectmainreactor") {
+                  showSomething('ejectmainreactor')
+                  }
+                  if(data == "cancelejectmainreactor") {
+                  hideSomething('ejectmainreactor')
+                  }
+                  if(data == "normaldylithium") {
+                  document.getElementById('normaldylithium').checked = true;
+                  document.getElementById('cautiondylithium').checked = false;
+                  document.getElementById('criticaldylithium').checked = false;
+                  }
+                  if(data == "cautiondylithium") {
+                  document.getElementById('normaldylithium').checked = false;
+                  document.getElementById('cautiondylithium').checked = true;
+                  document.getElementById('criticaldylithium').checked = false;
+                  }
+                  if(data == "criticaldylithium") {
+                  document.getElementById('normaldylithium').checked = false;
+                  document.getElementById('cautiondylithium').checked = false;
+                  document.getElementById('criticaldylithium').checked = true;
+                  }
+          if(data.startsWith("currentlyfixing: ")){
+            document.getElementById('currentlyfixing').value = data.replace("currentlyfixing: ", "");
+          }
+        });
+        function breakSystem() {
+        systemName = document.getElementById('brokensystemname').value;
+        socket.send('brokensystem: ' + systemName)
+        console.log(systemName)
+        document.getElementById('brokensystemname').value = "";
+        }
+        function fixSystem() {
+        value = document.getElementById('brokensystems').value;
+        console.log(value);
+        socket.send('fixsystem: ' + value)
+        }
+    function start() {
+        hideSomething('shipstarted')
+        hideSomething('ejectmainreactor')
+    }
+    function changeAvailablePowerLevel() {
+        showSomething('powerchanger')
+    }
+    function reallyChangePowerLevel() {
+        hideSomething('powerchanger')
+        socket.send("powerlevel: " + document.getElementById('powerchange').value)
+        console.log("powerchange" + document.getElementById('powerchange').value)
+        document.getElementById('powerchange').value = "";
+    }
+    function closePowerChanger() {
+        hideSomething('powerchanger')
+        document.getElementById('powerchange').value = "";
+    }
+    function changeAvailableWeaponsCoolantLevel() {
+	showSomething('weaponscoolantchanger')
+    }
+    function reallyChangeAvailabeWeaponsCoolantLevel() {
+        socket.send("flightdirectorweaponscoolant: " + document.getElementById('weaponscoolantchange').value)
+        hideSomething('weaponscoolantchanger')
+        document.getElementById('weaponscoolantchange').value = "";
+    }
+    function closeWeaponsCoolantChanger() {
+        hideSomething('weaponscoolantchanger')
+        document.getElementById('weaponscoolantchange').value = "";
+    }
+    function changeWeaponsHeatLevel() {
+        showSomething('weaponsheatchanger')
+    }
+    function reallyChangeWeaponsHeatLevel() {
+       socket.send("flightdirectorweaponsheat: " + document.getElementById('weaponsheatchange').value)
+       hideSomething('weaponsheatchanger')
+       document.getElementById('weaponsheatchange').value = "";
+    }
+    function closeWeaponsHeatChanger() {
+        hideSomething('weaponsheatchanger')
+        document.getElementById('weaponsheatchange').value = "";
+    }
+    function changeAvailableEngineCoolantLevel() {
+        showSomething('enginecoolantchanger')
+    }
+    function reallyChangeAvailabeEngineCoolantLevel() {
+        socket.send("flightdirectorenginecoolant: " + document.getElementById('enginecoolantchange').value)
+        hideSomething('enginecoolantchanger')
+        document.getElementById('enginecoolantchange').value = "";
+    }
+    function closeEngineCoolantChanger() {
+        hideSomething('enginecoolantchanger')
+        document.getElementById('enginecoolantchange').value = "";
+    }
+    function changeEngineHeatLevel() {
+        showSomething('engineheatchanger')
+    }
+    function reallyChangeEngineHeatLevel() {
+        socket.send("flighdirectorengineheat: " + document.getElementById('engineheatchange').value)
+        hideSomething('engineheatchanger')
+        document.getElementById('engineheatchange').value = "";
+    }
+    function closeEngineHeatChanger() {
+        hideSomething('engineheatchanger')
+        document.getElementById('engineheatchange').value = "";
+    }
+    function radioButtons() {
+        if(document.getElementById('normaldylithium').checked) {
+            socket.send("normaldylithium")
+        }
+        if(document.getElementById('cautiondylithium').checked) {
+            socket.send("cautiondylithium")
+        }
+        if(document.getElementById('criticaldylithium').checked) {
+            socket.send("criticaldylithium")
+            console.log("a;sldkfj")
+        }
+    }
+    </script>
+</head>
+
+
+<body onload="start()">
+  <div style="margin: 10px;">
+    <div id="shipstarted" class="alert alert-dismissable alert-success">
+        <button type="button" class="close" onclick="hideSomething('shipstarted')">X</button>
+        <strong>Ship Has Been Started</strong>
+        <p>The server has been started and the rest of the ship is now functional.</p>
+    </div>
+<div class="navbar navbar-default">
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="flight-director.html">Flight Director</a>
+  </div>
+  <div class="navbar-collapse collapse navbar-responsive-collapse">
+    <ul class="nav navbar-nav">
+      <li><a href="flight-director.html">General</a></li>
+      <li><a href="flight-director-navigations.html">Navigations</a></li>
+      <li><a href="flight-director-operations.html">Operations</a></li>
+      <li><a href="flight-director-tactical.html">Tactical</a></li>
+      <li class="active"><a href="flight-director-engineering.html">Engineering</a></li>
+      <li><a href="flight-director-admiral.html">Admiral</a></li>
+    </ul>
+    <form class="navbar-form navbar-left">
+      <input class="form-control col-lg-8" placeholder="Search" type="text">
+    </form>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="#" onclick="signOut()">Sign Out</a></li>
+    </ul>
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label" for="disabledInput">Engineer Name</label>
+  <input id="engineername" class="form-control" id="disabledInput" placeholder="" disabled="" type="text">
+</div>
+<div class="panel panel-danger" style="float:right" id="ejectmainreactor">
+    <div class="panel-heading">
+        <h3 class="panel-title">Main Reactor Eject Request</h3>
+    </div>
+    <div class="panel-body">
+        Engineer is requesting to eject the main reactor.
+    </div>
+</div>
+<form class="form-horizontal" style="width:864px;">
+  <fieldset>
+    <legend>Broken Systems</legend>
+    <div class="form-group">
+      <label for="textArea" class="col-lg-2 control-label">Textarea</label>
+      <div class="col-lg-10">
+        <label class="control-label" for="disabledInput">Add Broken System</label>
+        <input id="brokensystemname" class="form-control" placeholder="" type="text" onkeydown="if (event.keyCode == 13) { breakSystem() }">
+        <br>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="select" class="col-lg-2 control-label">List Of Broken Systems</label>
+      <div class="col-lg-10">
+        <select id="brokensystems" multiple="" class="form-control">
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-lg-10 col-lg-offset-2">
+      </div>
+    </div>
+  </fieldset>
+</form>
+<button onclick="breakSystem()" class="btn btn-primary">Break System</button>
+<button onclick="fixSystem()" class="btn btn-primary">Fix System</button>
+<br><br>
+<label class="control-label" for="inputLarge">Remote Repair Code</label>
+  <input disabled="" style="margin: 10px; width: 1000px;" class="form-control input-lg" id="remoterepaircode" type="text">
+  <br>
+  <label class="control-label" for="inputLarge">Currently Fixing:</label>
+  <input disabled="" style="margin: 10px; width: 1000px;" class="form-control input-lg" id="currentlyfixing" type="text">
+      <div style="width:1000px;">
+          <ul class="list-group">
+              <li class="list-group-item">
+                  <span id="warpenginepowerbadge" class="badge">100</span>
+                  Warp Engine Power
+              </li>
+              <li class="list-group-item">
+                  <span id="impulseenginepowerbadge"class="badge">100</span>
+                  Impulse Engines
+              </li>
+              <li class="list-group-item">
+                  <span id="thrusterpowerbadge"class="badge">100</span>
+                  Thrusters
+              </li>
+              <li class="list-group-item">
+                  <span id="maincomputerpowerbadge"class="badge">100</span>
+                  Main Computer Power
+              </li>
+              <li class="list-group-item">
+                  <span id="lifesupportpowerbadge"class="badge">100</span>
+                  Life Support Power
+              </li>
+              <li class="list-group-item">
+                  <span id="weaponspowerbadge"class="badge">100</span>
+                  Wepons Systems
+              </li>
+              <li class="list-group-item">
+                  <span id="tractorbeampowerbadge"class="badge">100</span>
+                  Tractor Beam
+              </li>
+              <li class="list-group-item">
+                  <span id="cloakingdevicepowerbadge"class="badge">100</span>
+                  Cloaking Device
+              </li>
+              <li class="list-group-item">
+                  <span id="transporterspowerbadge"class="badge">100</span>
+                  Transporters
+              </li>
+              <li class="list-group-item">
+                  <span id="totalpowerinusebadge" class="badge">900</span>
+                  Total Power In Use By Engineer
+              </li>
+          </ul>
+          <ul class="nav nav-pills">
+              <li class="active"><a href="#">Power Available <span id="availablepower" class="badge">200</span></a></li>
+              <li><a onclick="changeAvailablePowerLevel()">Change Power Level</a></li>
+          </ul>
+          </div>
+      <br>
+      <div style="width:1000px;">
+          <ul class="nav nav-pills">
+              <li class="active"><a href="#">Weapons Coolant Available<span id="availablweaponscoolant" class="badge">100</span></a></li>
+              <li><a onclick="changeAvailableWeaponsCoolantLevel()">Change Coolant Level</a></li>
+              <li class="active"><a href="#">Weapons Heat <span id="weaponsheat" class="badge">0</span></a></li>
+              <li><a onclick="changeWeaponsHeatLevel()">Change Heat Level</a></li>
+          </ul>
+          <br>
+          <ul class="nav nav-pills">
+              <li class="active"><a href="#">Engine Coolant Available<span id="availableenginecoolant" class="badge">100</span></a></li>
+              <li><a onclick="changeAvailableEngineCoolantLevel()">Change Coolant Level</a></li>
+              <li class="active"><a href="#">Engine Heat <span id="engineheat" class="badge">0</span></a></li>
+              <li><a onclick="changeEngineHeatLevel()">Change Heat Level</a></li>
+          </ul>
+      </div>
+      <div id="powerchanger" class="modal">
+          <div class="modal-dialog">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <button type="button" class="close" onclick="closePowerChanger()">×</button>
+                      <h4 class="modal-title">Change Power Level</h4>
+                  </div>
+                  <div class="modal-body">
+                      <div class="form-group has-warning">
+                          <label class="control-label" for="inputWarning">New Power Level</label>
+                          <input class="form-control" id="powerchange" type="text">
+                      </div>
+                  </div>
+                  <div class="modal-footer">
+                      <button onclick="closePowerChanger()" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                      <button onclick="reallyChangePowerLevel()"type="button" class="btn btn-primary">Change Power Level</button>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div id="weaponscoolantchanger" class="modal">
+          <div class="modal-dialog">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <button type="button" class="close" onclick="closeWeaponsCoolantChanger()">×</button>
+                      <h4 class="modal-title">Change Weapons Coolant Level</h4>
+                  </div>
+                  <div class="modal-body">
+                      <div class="form-group has-success">
+                          <label class="control-label" for="inputWarning">New Coolant Level</label>
+                          <input class="form-control" id="weaponscoolantchange" type="text">
+                              </div>
+                  </div>
+                  <div class="modal-footer">
+                      <button onclick="closeWeaponsCoolantChanger()" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                      <button onclick="reallyChangeAvailabeWeaponsCoolantLevel()"type="button" class="btn btn-primary">Change Coolant Level</button>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div id="weaponsheatchanger" class="modal">
+          <div class="modal-dialog">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <button type="button" class="close" onclick="closeWeaponsHeatChanger()">×</button>
+                      <h4 class="modal-title">Change Weapons Heat Level</h4>
+                  </div>
+                  <div class="modal-body">
+                      <div class="form-group has-error">
+                          <label class="control-label" for="inputError">New Heat Level</label>
+                          <input class="form-control" id="weaponsheatchange" type="text">
+                              </div>
+                  </div>
+                  <div class="modal-footer">
+                      <button onclick="closeWeaponsHeatChanger()" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                      <button onclick="reallyChangeWeaponsHeatLevel()"type="button" class="btn btn-primary">Change Heat Level</button>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div id="enginecoolantchanger" class="modal">
+          <div class="modal-dialog">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <button type="button" class="close" onclick="closeEngineCoolantChanger()">×</button>
+                      <h4 class="modal-title">Change Engine Coolant Level</h4>
+                  </div>
+                  <div class="modal-body">
+                      <div class="form-group has-success">
+                          <label class="control-label" for="inputWarning">New Coolant Level</label>
+                          <input class="form-control" id="enginecoolantchange" type="text">
+                              </div>
+                  </div>
+                  <div class="modal-footer">
+                      <button onclick="closeEngineCoolantChanger()" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                      <button onclick="reallyChangeAvailabeEngineCoolantLevel()"type="button" class="btn btn-primary">Change Coolant Level</button>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div id="engineheatchanger" class="modal">
+          <div class="modal-dialog">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <button type="button" class="close" onclick="closeEngineHeatChanger()">×</button>
+                      <h4 class="modal-title">Change Engine Heat Level</h4>
+                  </div>
+                  <div class="modal-body">
+                      <div class="form-group has-error">
+                          <label class="control-label" for="inputError">New Heat Level</label>
+                          <input class="form-control" id="engineheatchange" type="text">
+                              </div>
+                  </div>
+                  <div class="modal-footer">
+                      <button onclick="closeEngineHeatChanger()" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                      <button onclick="reallyChangeEngineHeatLevel()"type="button" class="btn btn-primary">Change Heat Level</button>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <br>
+      <div class="form-group">
+          <label class="col-lg-2 control-label">Dylithium Stress Levels</label>
+          <div class="col-lg-10">
+              <div class="radio">
+                  <label>
+                      <input name="optionsRadios" id="normaldylithium" type="radio">
+                          Normal
+                          </label>
+              </div>
+              <div class="radio">
+                  <label>
+                      <input name="optionsRadios" id="cautiondylithium" type="radio">
+                          Caution
+                          </label>
+              </div>
+              <div class="radio">
+                  <label>
+                      <input name="optionsRadios" id="criticaldylithium" type="radio">
+                          CRITICAL
+                          </label>
+              </div>
+          </div>
+      </div>
+      <br>
+      <a onclick="radioButtons()" class="btn btn-primary">Update Dylithium Status</a>
+  </div>
+</body>
+</html>

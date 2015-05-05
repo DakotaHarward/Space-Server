@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Space Server</title>
+    <link rel="stylesheet" href="../static/css/spaceserver.css">
+  <link rel="stylesheet" href="http://bootswatch.com/cyborg/bootstrap.css">
+    <script src="../static/javascript/shake.js"></script>
+    <script src="../static/javascript/jquery-1.11.1.min.js"></script>
+    <script src="../static/javascript/socketio.min.js"></script>
+    <script src="../static/javascript/jquery-2.1.3.min.js"></script>
+    <script type="text/javascript">
+       if (typeof String.prototype.startsWith != 'function') {
+  // see below for better implementation!
+  String.prototype.startsWith = function (str){
+    return this.indexOf(str) == 0;
+  };
+}
+    var socket = io.connect('http://' +window.location.hostname+ ':' +window.location.port+ '/main');
+      var option;
+      var phaser = ""; 
+      var phaserOk = 'yes';
+        function signOut() {
+        location.href = ('index.html')
+        }
+        function showSomething(id) {
+        document.getElementById(id).style.display = 'block';
+        }
+        function hideSomething(id) {
+        document.getElementById(id).style.display = 'none';
+        }
+      function frequency(type){
+        socket.send("frequency: " + type)
+      }
+      function answerHail(){
+        frequency('Operations Has Answered Your Hail')
+        socket.send("hailing: ")
+      }
+      function hail() {
+        socket.send("hailing: ")
+      }
+      function call(){
+        socket.send("calling: " + document.getElementById('calling').value)
+      }
+      function connectMainSpeakers(){
+        socket.send("connectmainspeakers")
+      }
+      function disconnectMainSpeakers(){
+        socket.send("disconnectmainspeakers")
+      }
+      function disconnectLine(){
+        socket.send("disconnectcommunications")
+      }
+        socket.on('message', function(data) {
+        console.log(data);
+          if(data == "reloadstations"){
+            location.href = ('operations-short-range-communication.html');
+          }
+          if(data == "blackout: operations") {
+            hideSomething('EVERYTHING')
+          }
+          if(data == "blackout: all") {
+            hideSomething('EVERYTHING')
+          }
+          if(data == "unblackout: operations") {
+            showSomething('EVERYTHING')
+          }
+          if(data== "unblackout: all") {
+            showSomething('EVERYTHING')
+          }
+          if(data.startsWith("frequency: ")){
+            if(data.replace("frequency: ", "") == "Borg"){
+              document.getElementById('communicationsbar').style.width = '20%';
+            }
+            if(data.replace("frequency: ", "") == "Federation"){
+              document.getElementById('communicationsbar').style.width = '40%';
+            }
+            if(data.replace("frequency: ", "") == "General Use"){
+              document.getElementById('communicationsbar').style.width = '60%';
+            }
+            if(data.replace("frequency: ", "") == "Romulan"){
+              document.getElementById('communicationsbar').style.width = '80%';
+            }
+            if(data.replace("frequency: ", "") == "Pakled"){
+              document.getElementById('communicationsbar').style.width = '100%';
+            }
+          }
+          if(data.startsWith("hailing: ")){
+            hideSomething('communicationsstuff')
+            hideSomething('incominghail')
+            showSomething('connectedline')
+          }
+          if(data.startsWith("calling: ")){
+            hideSomething('communicationsstuff')
+            hideSomething('incominghail')
+            showSomething('connectedline')
+            document.getElementById('calling').value = "";
+          }
+          if(data.startsWith("hailingfd")){
+            showSomething('incominghail')
+          }
+          if(data == "declinehail"){
+            hideSomething('connectedline')
+            hideSomething('incominghail')
+            showSomething('communicationsstuff')
+          }
+          if(data == "connectmainspeakers"){
+             hideSomething('connectmainspeakers')
+            showSomething('disconnectmainspeakers')
+             }
+          if(data == "disconnectmainspeakers"){
+             hideSomething('disconnectmainspeakers')
+            showSomething('connectmainspeakers')
+             }
+          if(data == "disconnectcommunications"){
+            hideSomething('connectedline')
+            hideSomething('incominghail')
+            showSomething('communicationsstuff')
+          }
+          if(data == "maincomputeroffline"){
+            offline()
+          }
+          if(data == "maincomputeronline"){
+            online()
+          }
+        });
+        function start() {
+        hideSomething('noconnection')
+        hideSomething('incominghail')
+        hideSomething('connectedline')
+        hideSomething('computermalfunction')
+        }
+    </script>
+</head>
+
+
+<body bgcolor="black" onload="start()">
+  <div id="computermalfunction" class="container1">
+    <h1 class="retro">Main Computer Offline</h1>
+    <h1 class="retro">Please Do The Following Damage Report</h1>
+    <h3 class="retro">Step 1: Activate The Main Computer Override On The S.I.L.V.E.R. Panel</h3> 
+    <h3 class="retro">Step 2: Enter The Following Code Main Computer Code On The S.I.L.V.E.R. Panel: 0, 0, 0, 0</h3> 
+    <h3 class="retro">Step 3: Press And Hold The Main Computer Purge Button On The S.I.L.V.E.R. Panel For 60 seconds</h3> 
+    <h3 class="retro">Step 4: Activate The Main Reactor Bypass On The S.I.L.V.E.R. Panel</h3> 
+    <h3 class="retro">Step 5: Deactivate The Main Computer Override On The S.I.L.V.E.R. Panel</h3> 
+    <h3 class="retro">Step 6: Deactivate The Main Reactor Bypass On The S.I.L.V.E.R. Panel</h3> 
+      </div>
+  <div id="EVERYTHING" style="margin: 10px;">
+<div id="noconnection" class="alert alert-dismissable alert-warning">
+        <button type="button" class="close" onclick="hideSomething('noconnection')">x</button>
+        <h4>No Connection To Server!</h4>
+        <p>Sadly there is no connection to the server. Ask for assistance from your flight director or try again later.</p>
+    </div>
+<div class="navbar navbar-default">
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="operations.html">Operations</a>
+  </div>
+  <div class="navbar-collapse collapse navbar-responsive-collapse">
+    <ul class="nav navbar-nav">
+      <li><a href="operations.html">Sensors Control</a></li>
+      <li class="active"><a href="operations-short-range-communication.html">Short Range Communication</a></li>
+      <li><a href="operations-long-range-communication.html">Long Range Communication</a></li>
+      <li><a href="operations-transporter-control.html">Transporter Control</a></li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="#" onclick="signOut()">Sign Out</a></li>
+    </ul>
+  </div>
+</div>
+<div id="communicationsstuff">
+    <div class="btn-group btn-group-justified">
+  <a onclick="frequency('Borg')" class="btn btn-danger">Borg</a>
+  <a onclick="frequency('Federation')" class="btn btn-primary">Federation</a>
+  <a onclick="frequency('General Use')" class="btn btn-default">General Use</a>
+      <a onclick="frequency('Romulan')" class="btn btn-success">Romulan</a>
+      <a onclick="frequency('Pakled')" class="btn btn-info">Pakled</a>
+</div>
+    <br>
+    <div class="progress progress-striped active">
+  <div id="communicationsbar" class="progress-bar progress-bar-warning" style="width: 0%"></div>
+</div>
+    <br>
+    <a onclick="hail()" id="hail" class="btn btn-default btn-lg btn-block">Hail On Selected Frequency</a>
+    <br>
+    <div class="form-group">
+  <label class="control-label" for="inputLarge">Internal Call</label>
+  <input class="form-control input-lg" id="calling" type="text">
+</div>
+   <br>
+    <a onclick="call()" id="call" class="btn btn-default btn-lg btn-block">Call Specified Room</a>
+    <br>
+  </div>
+    <div id="incominghail">
+      <h5>Incoming Hail</h5>
+      <a onclick="answerHail()" class="btn btn-success">Answer Incoming Hail</a>
+      <a onclick="disconnectLine()" class="btn btn-danger">Decline Incoming Hail</a>
+    </div>
+    <div id="connectedline">
+      <h5>Line Connected</h5>
+      <a onclick="disconnectLine()" class="btn btn-danger">Disconnect Communications Line</a>
+      <br><br>
+      <a onclick="connectMainSpeakers()" id="connectmainspeakers" class="btn btn-default">Connect To Main Speakers</a>
+      <a onclick="disconnectMainSpeakers()" id="disconnectmainspeakers" class="btn btn-default">Disconnect From Main Speakers</a>
+    </div>
+  </div>
+</body>
+</html>

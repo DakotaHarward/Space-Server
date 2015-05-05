@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Space Server</title>
+    <link rel="stylesheet" href="../static/css/spaceserver.css">
+  <link rel="stylesheet" href="http://bootswatch.com/cyborg/bootstrap.css">
+    <script src="../static/javascript/shake.js"></script>
+    <script src="../static/javascript/jquery-1.11.1.min.js"></script>
+    <script src="../static/javascript/socketio.min.js"></script>
+    <script type="text/javascript">
+       if (typeof String.prototype.startsWith != 'function') {
+  // see below for better implementation!
+  String.prototype.startsWith = function (str){
+    return this.indexOf(str) == 0;
+  };
+}
+    var scanning = "Yes";
+    var socket = io.connect('http://' +window.location.hostname+ ':' +window.location.port+ '/main');
+        function signOut() {
+        location.href = ('index.html')
+        }
+        function showSomething(id) {
+        document.getElementById(id).style.display = 'block';
+        }
+        function hideSomething(id) {
+        document.getElementById(id).style.display = 'none';
+        }
+        socket.on('message', function(data) {
+        console.log(data);
+          if(data == "reloadstations"){
+            location.href = ('navigations.html');
+          }
+          
+          if(data == "blackout: navigations") {
+            hideSomething('EVERYTHING')
+          }
+          if(data == "blackout: all") {
+            hideSomething('EVERYTHING')
+          }
+          if(data == "unblackout: navigations") {
+            showSomething('EVERYTHING')
+          }
+          if(data== "unblackout: all") {
+            showSomething('EVERYTHING')
+          }
+          if(data == "cancelcoursescan") {
+            hideSomething('cancelscanforcourse')
+            showSomething('scanningstuff')
+          }
+          if(data.startsWith("coursescan: ")) {
+            hideSomething('scanningstuff')
+            showSomething('cancelscanforcourse')
+          }
+          if(data.startsWith("precoursefd")) {
+            document.getElementById('xcoordinatefd').value = "";
+            document.getElementById('ycoordinatefd').value = "";
+            document.getElementById('zcoordinatefd').value = "";
+            cancelScanForCourse()
+          }
+          if(data.startsWith("xcoordinatefd: ")) {
+            document.getElementById('xcoordinatefd').value = data.replace("xcoordinatefd: ", "");
+          }
+          if(data.startsWith("ycoordinatefd: ")) {
+            document.getElementById('ycoordinatefd').value = data.replace("ycoordinatefd: ", "");
+          }
+          if(data.startsWith("zcoordinatefd: ")) {
+            document.getElementById('zcoordinatefd').value = data.replace("zcoordinatefd: ", "");
+          }
+          if(data == "maincomputeroffline"){
+            offline()
+          }
+          if(data == "maincomputeronline"){
+            online()
+          }
+        });
+      function selfDestruct() {
+        socket.send("selfdestruct")
+      }
+      function cancelSelfDestruct() {
+        socket.send("cancelselfdestruct")
+      }
+      function start() {
+          hideSomething('scanningstuff')
+          hideSomething('cancelscanforcourse')
+          hideSomething('computermalfunction')
+      }
+      function scanForCourse() {
+        socket.send("coursescan: " + document.getElementById('coursescan').value)
+        hideSomething('scanningstuff')
+        showSomething('cancelscanforcourse')
+        scanning = "Yes";
+        document.getElementById('coursescan').value = "";
+      }
+      function cancelScanForCourse() {
+        socket.send("cancelcoursescan")
+        hideSomething('cancelscanforcourse')
+        showSomething("scanningstuff")
+        scanning = "No";
+      }
+      function sendCourse() {
+          socket.send("precourse")
+          socket.send("xcoordinate: " + document.getElementById('xcoordinate').value)
+          socket.send("ycoordinate: " + document.getElementById('ycoordinate').value)
+          socket.send("zcoordinate: " + document.getElementById('zcoordinate').value)
+        }
+    </script>
+</head>
+
+
+<body bgcolor="black" onload="start()">
+  <div id="computermalfunction" class="container1">
+    <h1 class="retro">Main Computer Offline</h1>
+    <h1 class="retro">Please Do The Following Damage Report</h1>
+    <h3 class="retro">Step 1: Activate The Main Computer Override On The S.I.L.V.E.R. Panel</h3> 
+    <h3 class="retro">Step 2: Enter The Following Code Main Computer Code On The S.I.L.V.E.R. Panel: 0, 0, 0, 0</h3> 
+    <h3 class="retro">Step 3: Press And Hold The Main Computer Purge Button On The S.I.L.V.E.R. Panel For 60 seconds</h3> 
+    <h3 class="retro">Step 4: Activate The Main Reactor Bypass On The S.I.L.V.E.R. Panel</h3> 
+    <h3 class="retro">Step 5: Deactivate The Main Computer Override On The S.I.L.V.E.R. Panel</h3> 
+    <h3 class="retro">Step 6: Deactivate The Main Reactor Bypass On The S.I.L.V.E.R. Panel</h3> 
+      </div>
+  <div id="EVERYTHING" style="margin: 10px;">
+<div class="navbar navbar-default">
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="navigations.html">Navigations</a>
+  </div>
+  <div class="navbar-collapse collapse navbar-responsive-collapse">
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="navigations.html">Course Control</a></li>
+      <li><a href="navigations-speed-control.html">Speed Control</a></li>
+      <li><a href="navigations-thrusters.html">Thrusters</a></li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="#" onclick="signOut()">Sign Out</a></li>
+    </ul>
+  </div>
+</div>
+     <div id="scanningstuff" class="form-group" style="width: 750px;">
+      <label for="textArea" class="col-lg-2 control-label">Scan For Course</label>
+      <div class="col-lg-10">
+        <textarea class="form-control" rows="3" id="coursescan"></textarea>
+        <span class="help-block">Scan for where you want to go and a course will be returned.</span>
+      </div>
+    <br>
+    <a onclick="scanForCourse()" id="scanforcourse" class="btn btn-primary">Scan For Course</a>
+    </div>
+    <div id="cancelscanforcourse">
+    <br><br><br><br><br><br><br>
+    <a onclick="cancelScanForCourse()" class="btn btn-primary">Cancel Course Scan</a>
+    </div>
+    <br><br><br><br><br><br>
+    <div id="coordinates" style="margin: 10px; width: 200px;">
+      <p>Returned Course</p>
+  <label class="control-label" for="disabledInput">X:</label>
+  <input class="form-control" id="xcoordinatefd" disabled="" type="text">
+<br>
+  <label class="control-label" for="disabledInput">Y:</label>
+  <input class="form-control" id="ycoordinatefd" disabled="" type="text">
+<br>
+  <label class="control-label" for="disabledInput">Z:</label>
+  <input class="form-control" id="zcoordinatefd" disabled="" type="text">
+</div>
+    <br>
+    <div id="coordinates" style="margin: 10px; width: 200px;">
+      <p>Current Course</p>
+  <label class="control-label" for="disabledInput">X:</label>
+  <input class="form-control" id="xcoordinate" type="text">
+<br>
+  <label class="control-label" for="disabledInput">Y:</label>
+  <input class="form-control" id="ycoordinate" type="text">
+<br>
+  <label class="control-label" for="disabledInput">Z:</label>
+  <input class="form-control" id="zcoordinate" type="text">
+  </div>
+    <a onclick="sendCourse()" class="btn btn-primary">Set Course</a>
+  </div>
+</body>
+</html>

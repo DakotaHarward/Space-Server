@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Space Server</title>
+    <link rel="stylesheet" href="http://bootswatch.com/cyborg/bootstrap.css">
+    <script src="../static/javascript/jquery-1.11.1.min.js"></script>
+    <script src="../static/javascript/socketio.min.js"></script>
+    <script type="text/javascript">
+       if (typeof String.prototype.startsWith != 'function') {
+  // see below for better implementation!
+  String.prototype.startsWith = function (str){
+    return this.indexOf(str) == 0;
+  };
+}
+    var tacticalLoggedIn = "no";
+    var tacticalName = "Not Logged In";
+    var option;
+    var socket = io.connect('http://' +window.location.hostname+ ':' +window.location.port+ '/main');
+        function signOut() {
+        location.href = ('index.html')
+        }
+        function showSomething(id) {
+        document.getElementById(id).style.display = 'block';
+        }
+        function hideSomething(id) {
+        document.getElementById(id).style.display = 'none';
+        }
+      function returnTeam(team){
+        socket.send('recallsecurityteam' + team)
+      }
+        function start() {
+          hideSomething('shipstarted')
+          hideSomething('thxbutton1')
+          hideSomething('thxbutton2')
+          hideSomething('thxbutton3')
+          hideSomething('crmbutton1')
+          hideSomething('crmbutton2')
+          hideSomething('crmbutton3')
+          hideSomething('cloakingbutton1')
+          hideSomething('cloakingbutton2')
+          hideSomething('cloakingbutton3')
+          hideSomething('st1')
+          hideSomething('st2')
+          hideSomething('st3')
+        }
+      function authorizeTHX() {
+        socket.send('activatethxfd')
+      }
+      function deauthorizeTHX() {
+        socket.send('deactivatethx')
+      }
+      function stopTHX() {
+        socket.send('deactivatethx')
+      }
+      function authorizeCRM() {
+        socket.send('activatecrmfd')
+      }
+      function deauthorizeCRM() {
+        socket.send('deactivatecrm')
+      }
+      function stopCRM() {
+        socket.send('deactivatecrm')
+      }
+      function authorizeCloaking() {
+        socket.send('activatecloakingfd')
+      }
+      function deauthorizeCloaking() {
+        socket.send('deactivatecloaking')
+      }
+      function stopCloaking() {
+        socket.send('deactivatecloaking')
+      }
+      function addTorpedoes() {
+        socket.send('torpedoavailablefd: ' + document.getElementById('torpedoesavailablefd').value)
+        document.getElementById('torpedoesavailablefd').value = "";
+      }
+      function clearTargets(){
+        socket.send("cleartargets")
+      }
+      function addShip() {
+        socket.send("addship: " + document.getElementById('nearbytargetname').value)
+        document.getElementById('nearbytargetname').value = "";
+        }
+        function removeShip() {
+        socket.send("removeship: " + document.getElementById('nearbytargets').value)
+        }
+        socket.on('message', function(data) {
+        console.log(data);
+        if(data == "connected") {
+        showSomething('shipstarted')
+        }
+        if(data.startsWith("tacticaltaken: ")) {
+        tacticalLoggedIn = "yes";
+          document.getElementById('tacticalname').value = data.replace("tacticaltaken: ", "");
+          tacticalName = data.replace("tacticaltaken: ", "");
+        }
+          if(data.startsWith("nearbyship: ")) {
+        option = document.createElement("option");
+        option.text = data.replace("nearbyship: ", "");
+        document.getElementById('nearbytargets').add(option);
+        }
+        if(data == "preship") {
+        document.getElementById('nearbytargets').options.length = 0;
+        }
+        if(data.startsWith("locktarget: ")) {
+          document.getElementById('locktarget').value = data.replace("locktarget: ", "");
+        }
+        if(data.startsWith("phaserfired: ")){
+          setTimeout("document.getElementById('weaponsfire').style.background = '#FFFF00'; document.getElementById('weapon').innerHTML = 'Phaser';", 100);
+            setTimeout("document.getElementById('weaponsfire').style.background = '#FFFFFF'; document.getElementById('weapon').innerHTML = '';", 600);
+        }
+        if(data == "torpedoaway"){
+          setTimeout("document.getElementById('weaponsfire').style.background = '#FF3300'; document.getElementById('weapon').innerHTML = 'Torpedo';", 100);
+            setTimeout("document.getElementById('weaponsfire').style.background = '#FFFFFF'; document.getElementById('weapon').innerHTML = '';", 600);
+        }
+          if(data.startsWith("torpedoavailableleft: ")){
+            document.getElementById('torpedoesavailable').innerHTML = data.replace("torpedoavailableleft: ", "");
+          }
+          if(data.startsWith("cleartargets")){
+            document.getElementById('locktarget').value = "";
+          }
+          if(data.startsWith("shieldsactivated")) {
+            document.getElementById('shields').style.background = "#33CC33";
+            document.getElementById('shieldslabel').innerHTML = "Activated";
+          }
+          if(data.startsWith("shieldsdeactivated")){
+            document.getElementById('shields').style.background = "#FF0000";
+            document.getElementById('shieldslabel').innerHTML = "Deactivated";
+          }
+          if(data == "activatethx") {
+            showSomething('thxbutton1')
+            showSomething('thxbutton2')
+            document.getElementById('thxlabel').innerHTML = "Authorizing";
+          }
+          if(data == "activatethxfd") {
+            hideSomething('thxbutton1')
+            hideSomething('thxbutton2')
+            showSomething('thxbutton3')
+            document.getElementById('thxlabel').innerHTML = "Activated";
+          }
+          if(data == "deactivatethx") {
+            hideSomething('thxbutton1')
+            hideSomething('thxbutton2')
+            hideSomething('thxbutton3')
+            document.getElementById('thxlabel').innerHTML = "Not Active";
+          }
+           if(data == "activatecrm") {
+            showSomething('crmbutton1')
+            showSomething('crmbutton2')
+            document.getElementById('crmlabel').innerHTML = "Authorizing";
+          }
+          if(data == "activatecrmfd") {
+            hideSomething('crmbutton1')
+            hideSomething('crmbutton2')
+            showSomething('crmbutton3')
+            document.getElementById('crmlabel').innerHTML = "Activated";
+          }
+          if(data == "deactivatecrm") {
+            hideSomething('crmbutton1')
+            hideSomething('crmbutton2')
+            hideSomething('crmbutton3')
+            document.getElementById('crmlabel').innerHTML = "Not Active";
+          } 
+          if(data == "activatecloaking") {
+            showSomething('cloakingbutton1')
+            showSomething('cloakingbutton2')
+            document.getElementById('crmlabel').innerHTML = "Authorizing";
+          }
+          if(data == "activatecloakingfd") {
+            hideSomething('cloakingbutton1')
+            hideSomething('cloakingbutton2')
+            showSomething('cloakingbutton3')
+            document.getElementById('crmlabel').innerHTML = "Activated";
+          }
+          if(data == "deactivatecloaking") {
+            hideSomething('cloakingbutton1')
+            hideSomething('cloakingbutton2')
+            hideSomething('cloakingbutton3')
+            document.getElementById('cloakinglabel').innerHTML = "Not Active";
+          }
+          if(data.startsWith("sendsecurityteam1: ")){
+            document.getElementById('securityteam1orders').innerHTML = data.replace("sendsecurityteam1: ", "");
+            showSomething('st1')
+          }
+          if(data == "recallsecurityteam1"){
+            document.getElementById('securityteam1orders').innerHTML = "";
+            hideSomething('st1')
+          }
+          if(data.startsWith("sendsecurityteam2: ")){
+            document.getElementById('securityteam2orders').innerHTML = data.replace("sendsecurityteam2: ", "");
+            showSomething('st2')
+          }
+          if(data == "recallsecurityteam2"){
+            document.getElementById('securityteam2orders').innerHTML = "";
+            hideSomething('st2')
+          }
+          if(data.startsWith("sendsecurityteam3: ")){
+            document.getElementById('securityteam3orders').innerHTML = data.replace("sendsecurityteam3: ", "");
+            showSomething('st3')
+          }
+          if(data == "recallsecurityteam3"){
+            document.getElementById('securityteam3orders').innerHTML = "";
+            hideSomething('st3')
+          }
+          if(data == "activatetranzinegas"){
+            document.getElementById('tranzinegas').style.background = "#33CC33";
+            document.getElementById('tranzinegaslabel').innerHTML = "Activated";
+          }
+          if(data == "deactivatetranzinegas"){
+            document.getElementById('tranzinegas').style.background = "#FF0000";
+            document.getElementById('tranzinegaslabel').innerHTML = "Deactivated";
+          }
+          if(data == "closebulkheaddoors"){
+            document.getElementById('bulkheaddoors').style.background = "#33CC33";
+            document.getElementById('bulkheaddoorslabel').innerHTML = "Closed";
+          }
+          if(data == "openbulkheaddoors"){
+            document.getElementById('bulkheaddoors').style.background = "#FF0000";
+            document.getElementById('bulkheaddoorslabel').innerHTML = "Opened";
+          }
+        });
+    </script>
+</head>
+
+
+<body onload="start()">
+  <div style="margin: 10px;">
+    <div id="shipstarted" class="alert alert-dismissable alert-success">
+        <button type="button" class="close" onclick="hideSomething('shipstarted')">X</button>
+        <strong>Ship Has Been Started</strong>
+        <p>The server has been started and the rest of the ship is now functional.</p>
+    </div>
+<div class="navbar navbar-default">
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="flight-director.html">Flight Director</a>
+  </div>
+  <div class="navbar-collapse collapse navbar-responsive-collapse">
+    <ul class="nav navbar-nav">
+      <li><a href="flight-director.html">General</a></li>
+      <li><a href="flight-director-navigations.html">Navigations</a></li>
+      <li><a href="flight-director-operations.html">Operations</a></li>
+      <li class="active"><a href="flight-director-tactical.html">Tactical</a></li>
+      <li><a href="flight-director-engineering.html">Engineering</a></li>
+      <li><a href="flight-director-admiral.html">Admiral</a></li>
+    </ul>
+    <form class="navbar-form navbar-left">
+      <input class="form-control col-lg-8" placeholder="Search" type="text">
+    </form>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="#" onclick="signOut()">Sign Out</a></li>
+    </ul>
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label" for="disabledInput">Tactical Name</label>
+  <input id="tacticalname" class="form-control" id="disabledInput" placeholder="" disabled="" type="text">
+</div>
+  <form class="form-horizontal" style="width:864px;">
+  <fieldset>
+    <legend>Nearby Targets</legend>
+    <div class="form-group">
+      <label for="textArea" class="col-lg-2 control-label">Targets</label>
+      <div class="col-lg-10">
+        <label class="control-label" for="disabledInput">Add Target</label>
+        <input id="nearbytargetname" class="form-control" placeholder="" type="text" onkeydown="if (event.keyCode == 13) { removeShip() }">
+        <br>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="select" class="col-lg-2 control-label">List Of Targets</label>
+      <div class="col-lg-10">
+        <select id="nearbytargets" multiple="" class="form-control">
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-lg-10 col-lg-offset-2">
+      </div>
+    </div>
+  </fieldset>
+</form>
+<button onclick="addShip()" class="btn btn-primary">Add Target</button>
+<button onclick="removeShip()" class="btn btn-primary">Remove Target</button>
+  <button onclick="clearTargets()" class="btn btn-primary">Clear Targets</button>
+  <br><br>
+<div class="form-group">
+  <label class="control-label" for="disabledInput">Target Lock</label>
+  <input class="form-control" id="locktarget" placeholder="" disabled="" type="text">
+</div>
+  <p>Weapons Fire</p>
+  <div id="weaponsfire" style="background-color: #FFFFFF; width: 100px; height: 50px;">
+    <center>
+      <b><p id="weapon"></p></b>
+      </center>
+  </div>
+  <br>
+  <p>Torpedoes Available To Tacticl:</p>
+    <p id="torpedoesavailable">0</p>
+  <div class="form-group">
+  <label class="control-label" >Add Torpedos</label>
+  <input class="form-control" id="torpedoesavailablefd" type="text">
+</div>
+  <a onclick="addTorpedoes()" class="btn btn-danger">Add Torpedos</a>
+  <br><br>
+  <p>Shields</p>
+  <div id="shields" style="background-color: #FFFFFF; width: 100px; height: 50px;">
+    <center>
+      <b><p id="shieldslabel"></p></b>
+      </center>
+  </div>
+  <br>
+  <ul class="nav nav-pills">
+  <li class="active"><a>THX <span class="badge" id="thxlabel">Not Active</span></a></li>
+  <li class="active"><a>CRM <span class="badge" id="crmlabel">Not Active</span></a></li>
+  <li class="active"><a>Cloaking Device <span class="badge" id="cloakinglabel">Not Active</span></a></li>
+</ul>
+  <br>
+  <a onclick="authorizeTHX()" class="btn btn-danger" id="thxbutton1">Authorize THX</a>
+  <a onclick="deauthorizeTHX()" class="btn btn-warning" id="thxbutton2">Deauthorize THX</a>
+  <a onclick="stopTHX()" class="btn btn-info" id="thxbutton3">Stop THX</a>
+  <a onclick="authorizeCRM()" class="btn btn-danger" id="crmbutton1">Authorize CRM</a>
+  <a onclick="deauthorizeCRM()" class="btn btn-warning" id="crmbutton2">Deauthorize CRM</a>
+  <a onclick="stopCRM()" class="btn btn-info" id="crmbutton3">Stop CRM</a>
+  <a onclick="authorizeCloaking()" class="btn btn-danger" id="cloakingbutton1">Authorize Cloaking</a>
+  <a onclick="deauthorizeCloaking()" class="btn btn-warning" id="cloakingbutton2">Deauthorize Cloaking</a>
+  <a onclick="stopCloaking()" class="btn btn-info" id="cloakingbutton3">Stop Cloaking</a>
+  <div class="list-group">
+  <a class="list-group-item">
+    <h4 class="list-group-item-heading">Security Team 1</h4>
+    <p id="securityteam1orders" class="list-group-item-text"></p>
+  </a>
+  <a class="list-group-item">
+    <h4 class="list-group-item-heading">Security Team 2</h4>
+    <p id="securityteam2orders" class="list-group-item-text"></p>
+  </a>
+    <a class="list-group-item">
+    <h4 class="list-group-item-heading">Security Team 3</h4>
+    <p id="securityteam3orders" class="list-group-item-text"></p>
+  </a>
+    <br>
+    <a onclick="returnTeam('1')" class="btn btn-primary" id="st1">Return Team 1</a>
+      <a onclick="returnTeam('2')" class="btn btn-primary" id="st2">Return Team 2</a>
+      <a onclick="returnTeam('3')" class="btn btn-primary" id="st3">Return Team 3</a>
+</div>
+  <p>Bulkhead Doors</p>
+  <div id="bulkheaddoors" style="background-color: #FFFFFF; width: 100px; height: 50px;">
+    <center>
+      <b><p id="bulkheaddoorslabel"></p></b>
+      </center>
+  </div>
+  <br>
+  <p>Tranzine Gas</p>
+  <div id="tranzinegas" style="background-color: #FFFFFF; width: 100px; height: 50px;">
+    <center>
+      <b><p id="tranzinegaslabel"></p></b>
+      </center>
+  </div>
+  </div>
+</body>
+</html>

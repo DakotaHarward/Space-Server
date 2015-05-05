@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Space Server</title>
+    <link rel="stylesheet" href="../static/css/spaceserver.css">
+    <link rel="stylesheet" href="http://bootswatch.com/cyborg/bootstrap.css">
+    <script src="../static/javascript/shake.js"></script>
+    <script src="../static/javascript/jquery-1.11.1.min.js"></script>
+    <script src="../static/javascript/socketio.min.js"></script>
+    <script src="../static/javascript/jquery-2.1.3.min.js"></script>
+    <script type="text/javascript">
+       if (typeof String.prototype.startsWith != 'function') {
+  // see below for better implementation!
+  String.prototype.startsWith = function (str){
+    return this.indexOf(str) == 0;
+  };
+}
+      
+    var damageReport1 = "SYSTEM = System Selected To Fix\nStep 1: Take the power out of SYSTEM or the closest relating system to SYSTEM.\nStep 2: Make a damage team consisting of 2 computer personell, 1 chief engineer, and 4 electrical/plasma workers. Tell them which system is broken and that they need to go down to the quartermaster to get parts. Then after they've done that tell them to go down to where the system is located and start repairing the internal parts.\nStep 3: Tell the Operations officer to send a message to Starfleet command saying the following, We are currently undergoing repairs. We will keep you posted on further notices.\nStep 4: Go to the O.R.A.N.G.E. panel and flip the B-1Y1 in the up position.\nStep 5: Put the ISO-1 chip in the ISO-Repair slot.\nStep 6: Have Operations do an internal scan of the ship for SYSTEM plasma leaks. In the case there are plasma leaks send a Textual message to the room the plasma leak is in and ask them to give you more info on the plasma leak.\nStep 7: While waiting for the information on the plasma leak alert the Admiral of the system that's broken and that you are in the process of repair.\nStep 8: Once you get the information on the plasma leak then follow the instructions given\nStep 9: Go to the O.R.A.N.G.E panel and hold down the Main Computer Purge button for 15 seconds. Then flip the B-1Y1 switch in the neutral position.\nStep 10: Ask the Operations officer to send a textual message to where your damage team created earlier is and ask them if they are done. If they are done then make a new damage team consisting of 5 Janitorial staff and 1 Supervisor and tell them to go and clean up the mess that the repair team made. If they respond that they are not done then do what they tell you to do in the message.\nStep 11: Once your cleanup crew is done put power back into the system that you took power out of.\nStep : Send the following remote repair code: ENG-SYSTEM-23749-789-1";
+    var damageReport2 = "SYSTEM = System Selected To Fix\nStep 1: In order to begin the damage report, you must first alert the main computer. Enter in the main computer code '3026' on the engineering panel. This will begin the repair process.\nStep 2: Alert the engineer to take power out of the SYSTEM.\nStep 3: Tell operations to call the alpha medical bay on deck 10 and say to prepare for a lot of injuries from repair\nStep 4: Send a damage team down to main engineering on deck 49. Include a chief engineer, and a janitorial staff. Name it SYSTEM fix.\nStep 5: Activate the main reactor bypass.\nStep 6: Activate switch B-1Y1.\nStep 7: Place iso-1 into the top iso-repair slot.\nStep 7: Deactivate the main reactor bypass.\nStep 8: Enter the main computer code 5389\nStep 9: Have the engineer replace the power into the SYSTEM.\nStep 10: Purge main computer memory for seven seconds. your engineering station, enter in the remote repair code ENG-SYSTEM-5389-256";
+      var damageReport3 = "SYSTEM = System Selected To Fix\nStep 1: In order to begin the damage report, you must first alert the main computer. Enter in the main computer code 2461 on the engineering panel. This will begin the repair process.\nStep 2: Take power out of the shielding system. \nStep 3: Send a damage team down to main engineering deck 49. Include a computer specialist, and a supervisor.\nStep 4: Activate the main reactor bypass.\nStep 5: Activate switch C-1X2\nStep 6: Place iso-1 into the bottom iso-repair slot.\nStep 7: Activate the shield hyper drive\nStep 8: Deactivate the main reactor bypass.\nStep 9: Enter the main computer code 5428\nStep 10: Replace the power into the shielding system.\nStep 11: Purge main computer memory for six seconds.\nStep 12: At your engineering station, enter in the remote repair code ENG-SYTEM-5428-1851";
+      var damageReport4 = "SYSTEM = System Selected To Fix\nStep 1: In order to begin the damage report, you must first alert the main computer. Enter in the main computer code 7356 on the engineering panel. This will begin the repair process.\nStep 2: Tell the Engineer to take the power out of the SYSTEM. \nStep 3: Activate C-1X2\nStep 4: Send a damage team down to main engineering on deck 49. Include a chief engineer, and a Electric/Plasma Worker.\nStep 6: Activate the main reactor bypass.\nStep 7: Activate warp capacitor 1.\nStep 8: Place iso-1 into the bottom iso-repair slot.\nStep 9: Deactivate the main reactor bypass.\nStep 10: Enter the main computer code 1897\nStep 11: Replace the power into the SYSTEM.\nStep 12: Purge main computer memory for six seconds.\nStep 13: At your engineering station, enter in the remote repair code ENG-SYSTEM-7356-4891";
+      var damageReport5 = "SYSTEM = System Selected To Fix\nStep 1: In order to begin the damage report, you must first alert the main computer. Enter in the main computer code 4998 on the engineering panel. This will begin the repair process.\nStep 2: Ask the Engineer to take power out of the SYSTEM\nStep 3: Create a damage team named SYSTEM Repair. Include a chief engineer and a supervisor.\nStep 4: Activate warp capacitor 1\nStep 5: Power the hyper drive\nStep 6: Ask the main computer for the integrity of the warp field. If below 73%, activate warp capacitor 2 and enter in main computer code 4723 on the engineering panel. If above 73% continue the damage report.\nStep 7: Enter in the main computer code 7525\nStep 8: Replace power into the SYSTEM\nStep 9: Purge main computer memory for 25 seconds\nStep 10: At your engineering station, enter the activation code ENG-SYSTEM-1891-9891";
+    var reportNumber;
+    var remoteCode;
+    var fakeBrokenSystem = "";
+    var brokenSystem = "";
+    var select = "";
+    var option = "";
+    var engineerLoggedIn = "no";
+    var engineerFakeName = "Not Logged In";
+    var engineerName = "Not Logged In";
+    var blackout = "False";
+    var socket = io.connect('http://' +window.location.hostname+ ':' +window.location.port+ '/main');
+    var currentSystem = "";
+        function signOut() {
+        location.href = ('index.html')
+        }
+        function showSomething(id) {
+        document.getElementById(id).style.display = 'block';
+        }
+        function hideSomething(id) {
+        document.getElementById(id).style.display = 'none';
+        }
+        socket.on('message', function(data) {
+        console.log(data);
+          if(data == "reloadstations"){
+            location.href = ('engineer.html');
+          }
+        if(data.startsWith("engineertaken: ")) {
+        engineerLoggedIn = "yes";
+        engineerFakeName = data;
+        engineerName = engineerFakeName.replace("engineertaken: ", "");
+        console.log(engineerName)
+        }
+        if(data.startsWith("brokensystem: ")) {
+        fakeBrokenSystem = data;
+        brokenSystem = fakeBrokenSystem.replace("brokensystem: ", "");
+        console.log(brokenSystem)
+        select = document.getElementById('brokensystems');
+        option = document.createElement("option");
+        option.text = brokenSystem;
+        select.add(option);
+        }
+        if(data == "predamage") {
+        document.getElementById('brokensystems').options.length = 0;
+        console.log("asldkjfa;lskdjf")
+        }
+          if(data.startsWith("damagereport: ")){
+            document.getElementById('damagereportfield').value = data.replace("damagereport: ", "");
+          }
+          if(data == "blackout: engineering") {
+            hideSomething('EVERYTHING')
+          }
+          if(data == "blackout: all") {
+            hideSomething('EVERYTHING')
+          }
+          if(data == "unblackout: engineering") {
+            showSomething('EVERYTHING')
+          }
+          if(data== "unblackout: all") {
+            showSomething('EVERYTHING')
+          }
+          if(data.startsWith("currentlyfixing: ")){
+            currentSystem = data.replace("currentlyfixing: ", "")
+          }
+          if(data == "maincomputeroffline"){
+            offline()
+          }
+          if(data == "maincomputeronline"){
+            online()
+          }
+        });
+        function start() {
+        hideSomething('noconnection')
+        hideSomething('damageteamtabs')
+        hideSomething('damageteamtabcontent')
+        showSomething('damagecontroltabs')
+        showSomething('damagecontroltabcontent')
+        hideSomething('looseprogress')
+        hideSomething('computermalfunction')
+        console.log('loaded start');
+        }
+    function goToDamageControl() {
+        hideSomething('damageteamtabs')
+        hideSomething('damageteamtabcontent')
+        showSomething('damagecontroltabs')
+        showSomething('damagecontroltabcontent')
+    }
+    function goToDamageTeams() {
+        hideSomething('damagecontroltabs')
+        hideSomething('damagecontroltabcontent')
+        showSomething('damageteamtabs')
+        showSomething('damageteamtabcontent')
+    }
+    function fixSystem() {
+      console.log(document.getElementById('brokensystems').value)
+      if(document.getElementById('brokensystems').value != ""){
+        if(document.getElementById('brokensystems').value == currentSystem){
+        }else if(document.getElementById('brokensystems').value != currentSystem) {
+          if(currentSystem == ""){
+            reportNumber = Math.floor((Math.random() * 5) + 1);
+        socket.send("currentlyfixing: " + document.getElementById('brokensystems').value)
+        if(reportNumber == 1) {
+        document.getElementById('damagereportfield').value = damageReport1;
+          socket.send("damagereport: " + damageReport1)
+        } else if(reportNumber == 2) {
+            document.getElementById('damagereportfield').value = damageReport2;
+          socket.send("damagereport: " + damageReport2)
+        } else if(reportNumber == 3) {
+          document.getElementById('damagereportfield').value = damageReport3;
+          socket.send("damagereport: " + damageReport3)
+        } else if(reportNumber == 4) {
+          document.getElementById('damagereportfield').value = damageReport4;
+          socket.send("damagereport: " + damageReport4)
+        } else if(reportNumber == 5) {
+          document.getElementById('damagereportfield').value = damageReport5;
+          socket.send("damagereport: " + damageReport5)
+        }
+          } else {
+          showSomething('looseprogress')
+          console.log('akldjfasdkl;')
+        }
+      }
+      }
+    }
+      function overrideFixSystem() {
+        hideSomething('looseprogress')
+        reportNumber = Math.floor((Math.random() * 2) + 1);
+        socket.send("currentlyfixing: " + document.getElementById('brokensystems').value)
+        if(reportNumber == 1) {
+        document.getElementById('damagereportfield').value = damageReport1;
+          socket.send("damagereport: " + damageReport1)
+        } else if(reportNumber == 2) {
+            document.getElementById('damagereportfield').value = damageReport2;
+          socket.send("damagereport: " + damageReport2)
+        } else if(reportNumber == 3) {
+          document.getElementById('damagereportfield').value = damageReport3;
+          socket.send("damagereport: " + damageReport3)
+        } else if(reportNumber == 4) {
+          document.getElementById('damagereportfield').value = damageReport4;
+          socket.send("damagereport: " + damageReport4)
+        } else if(reportNumber == 5) {
+          document.getElementById('damagereportfield').value = damageReport5;
+          socket.send("damagereport: " + damageReport5)
+        }
+      }
+    function sendCode() {
+        remoteCode = document.getElementById('remoterepaircode').value;
+        socket.send('remoterepaircode: ' + remoteCode)
+        document.getElementById('remoterepaircode').value = "";
+        }
+    function createDamageTeam() {
+        document.getElementById('damageteamname').value = "";
+        document.getElementById('orders').value = "";
+        document.getElementById('cheifengineers').value = "0";
+        document.getElementById('computerspecialists').value = "0";
+        document.getElementById('electricplasmaworkers').value = "0";
+        document.getElementById('supervisor').value = "0";
+        document.getElementById('janitorialstaff').value = "0";
+}
+  </script>
+</head>
+
+<body bgcolor="black" onload="start()">
+  <div id="computermalfunction" class="container1">
+    <h1 class="retro">Main Computer Offline</h1>
+    <h1 class="retro">Please Do The Following Damage Report</h1>
+    <h3 class="retro">Step 1: Activate The Main Computer Override On The S.I.L.V.E.R. Panel</h3> 
+    <h3 class="retro">Step 2: Enter The Following Code Main Computer Code On The S.I.L.V.E.R. Panel: 0, 0, 0, 0</h3> 
+    <h3 class="retro">Step 3: Press And Hold The Main Computer Purge Button On The S.I.L.V.E.R. Panel For 60 seconds</h3> 
+    <h3 class="retro">Step 4: Activate The Main Reactor Bypass On The S.I.L.V.E.R. Panel</h3> 
+    <h3 class="retro">Step 5: Deactivate The Main Computer Override On The S.I.L.V.E.R. Panel</h3> 
+    <h3 class="retro">Step 6: Deactivate The Main Reactor Bypass On The S.I.L.V.E.R. Panel</h3> 
+      </div>
+<div id="EVERYTHING" style="margin: 10px;">
+<div id="noconnection" class="alert alert-dismissable alert-warning">
+        <button type="button" class="close" onclick="hideSomething('noconnection')">x</button>
+        <h4>No Connection To Server!</h4>
+        <p>Sadly there is no connection to the server. Ask for assistance from your flight director or try again later.</p>
+    </div>
+<div class="navbar navbar-default">
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="engineer.html">Engineer</a>
+  </div>
+  <div class="navbar-collapse collapse navbar-responsive-collapse">
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="engineer.html">Damage Control</a></li>
+      <li><a href="engineer-distribution.html">Distribtion</a></li>
+      <li><a href="engineer-reactor-monitoring.html">Reactor Monitoring</a></li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="index.html" onclick="signOut()">Sign Out</a></li>
+    </ul>
+  </div>
+</div>
+<ul id="damagecontroltabs" class="nav nav-tabs">
+  <div class="modal" id="looseprogress">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" onclick="hideSomething('looseprogress')" aria-hidden="true">×</button>
+        <h4 class="modal-title">Are You Sure?</h4>
+      </div>
+      <div class="modal-body">
+        <p>If you continue your progress on fixing the current system will be lost.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="hideSomething('looseprogress')" data-dismiss="modal">No</button>
+        <button type="button" onclick="overrideFixSystem()" class="btn btn-primary">Yes</button>
+      </div>
+    </div>
+  </div>
+</div>
+    <li class="active"><a onclick="goToDamageControl()" data-toggle="tab">Damage Conrol</a></li>
+    <li><a onclick="goToDamageTeams()" data-toggle="tab">Damage Teams</a></li>
+</ul>
+<div id="damagecontroltabcontent" class="tab-content">
+    <div class="tab-pane fade active in">
+        <p><div style="width:864px;" class="form-group">
+            <label for="select" class="col-lg-2 control-label">Broken Systems</label>
+            <div class="col-lg-10">
+                <br>
+                <select id="brokensystems" multiple="" class="form-control">
+                </select>
+            </div>
+        </div>
+    <button class="btn btn-primary" onclick="fixSystem()">Fix System</button>
+    <br><br><br><br><br>
+      <label for="textArea" class="col-lg-2 control-label">Damage Report Instructions</label>
+        <textarea disabled="" style="margin: 25px; width: 1000px;" class="form-control" rows="25" id="damagereportfield"></textarea>
+        <span id="damagereportfield" class="help-block">These are the steps you need to follow to fix the selected system.</span>
+  <label class="control-label" for="inputLarge">Remote Repair Code</label>
+  <input style="margin: 10px; width: 1000px;" class="form-control input-lg" id="remoterepaircode" type="text">
+  <button class="btn btn-primary" onclick="sendCode()">Send Remote Repair Code</button>
+    </p>
+    </div>
+   <img src="../static/media/panel.png" alt="panel" height="600" width="750"> 
+</div>
+<ul id="damageteamtabs" class="nav nav-tabs">
+    <li><a onclick="goToDamageControl()" data-toggle="tab">Damage Conrol</a></li>
+    <li class="active"><a onclick="goToDamageTeams()" data-toggle="tab">Damage Teams</a></li>
+</ul>
+<div id="damageteamtabcontent" class="tab-content">
+    <br>
+    <div class="tab-pane fade active in">
+    <p><legend>Damage Team Creation</legend>
+    <div class="form-group">
+      <label for="inputPassword" class="col-lg-2 control-label">Damage Team Name</label>
+      <div class="col-lg-10">
+        <input class="form-control" id="damageteamname" placeholder="Damage Team Name" type="text">
+      </div>
+    </div>
+    <div class="form-group">
+        <label for="select" class="col-lg-2 control-label">Chief Engineers</label>
+        <div class="col-lg-10">
+            <br>
+            <select class="form-control" id="cheifengineers">
+			<option>0</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+            </select>
+            <br>
+        </div>
+        <label for="select" class="col-lg-2 control-label">Computer Specialists</label>
+        <div class="col-lg-10">
+            <select class="form-control" id="computerspecialists">
+			<option>0</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+            </select>
+            <br>
+        </div>
+        <label for="select" class="col-lg-2 control-label">Electric/Plasma Workers</label>
+        <div class="col-lg-10">
+            <select class="form-control" id="electricplasmaworkers">
+			<option>0</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+            </select>
+            <br>
+        </div>
+    </div>
+<label for="select" class="col-lg-2 control-label">Supervisor</label>
+        <div class="col-lg-10">
+            <select class="form-control" id="supervisor">
+			<option>0</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+            </select>
+            <br>
+        </div>
+<label for="select" class="col-lg-2 control-label">Janitorial Staff</label>
+        <div class="col-lg-10">
+            <select class="form-control" id="janitorialstaff">
+			<option>0</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+            </select>
+            <br>
+        </div>
+
+    <div class="form-group">
+      <label for="textArea" class="col-lg-2 control-label">Orders</label>
+      <div class="col-lg-10">
+        <textarea class="form-control" rows="3" id="orders" placeholder="Orders"></textarea>
+        <span class="help-block">That Completes The Damage Team Creation</span>
+      </div>
+    </div>
+        <button onclick="createDamageTeam()"class="btn btn-default">Cancel</button>
+        <button onclick="createDamageTeam()" class="btn btn-primary">Create Damage Team</button></p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Space Server</title>
+  <link rel="stylesheet" href="http://bootswatch.com/cyborg/bootstrap.css">
+  <script src="../static/javascript/jquery-1.11.1.min.js"></script>
+  <script src="../static/javascript/socketio.min.js"></script>
+  <script src="../static/media/mespeak/mespeak.js"></script>
+  <script type="text/javascript">
+      meSpeak.loadConfig("static/media/mespeak/mespeak_config.json");
+      meSpeak.loadVoice("static/media/mespeak/voices/en-us.json");
+       if (typeof String.prototype.startsWith != 'function') {
+  // see below for better implementation!
+  String.prototype.startsWith = function (str){
+    return this.indexOf(str) == 0;
+  };
+}
+    var operationsLoggedIn = "no";
+    var operationsName = "Not Logged In";
+    var option;
+    var option1;
+    var option2;
+    var transportedTo;
+    var sayMainSpeakers = false;
+    var socket = io.connect('http://' +window.location.hostname+ ':' +window.location.port+ '/main');
+        function signOut() {
+        location.href = ('index.html')
+        }
+        function showSomething(id) {
+        document.getElementById(id).style.display = 'block';
+        }
+        function hideSomething(id) {
+        document.getElementById(id).style.display = 'none';
+        }
+        function start() {
+          hideSomething('shipstarted')
+          hideSomething('disconnectline')
+        }
+      function sendExternalScanAnswer() {
+        socket.send("external scan answer: " + document.getElementById('externalscananswer').value)
+      }
+      function sendInternalScanAnswer() {
+        socket.send("internal scan answer: " + document.getElementById('internalscananswer').value)
+      }
+      function sendSensorsInfo() {
+        socket.send("sensors info: " + document.getElementById('sensorsinfo').value)
+      }
+      function disconnectLine(){
+        socket.send("disconnectcommunications")
+      }
+      function hail(){
+        socket.send("hailingfd")
+      }
+      function viewMessage() {
+        document.getElementById('message').value = document.getElementById('inbox').value;
+      }
+      function sendMessage() {
+        hideSomething('sendmessage')
+        socket.send('longrangemessageops: ' + document.getElementById('longrangemessage').value)
+        document.getElementById('longrangemessage').value = "";
+      }
+      function deleteMessage(){
+        socket.send('deletelongrangemessagefd: ' + document.getElementById('inbox').value)
+      }
+      function addTarget(){
+        socket.send('transportertarget: ' + document.getElementById('transportertargetname').value)
+        document.getElementById('transportertargetname').value = "";
+      }
+      function removeTarget(){
+        socket.send('transportedtarget: ' + document.getElementById('transportertargets').value)
+      }
+        socket.on('message', function(data) {
+        console.log(data);
+        if(data == "connected") {
+        showSomething('shipstarted')
+        }
+        if(data.startsWith("operationstaken: ")) {
+        operationsLoggedIn = "yes";
+          document.getElementById('operationsname').value = data.replace("operationstaken: ", "");
+          operationsName = data.replace("operationstaken: ", "");
+        }
+          if(data.startsWith("external scan: ")){
+            document.getElementById('externalscan').value = data.replace("external scan: ", "");
+            meSpeak.speak("External scan.");
+          }
+          if(data == "cancelexternalscan"){
+            document.getElementById('externalscan').value = "";
+            meSpeak.speak("External scan cancelled.");
+          }
+          if(data.startsWith("external scan answer: ")){
+            document.getElementById('externalscananswer').value = "";
+            document.getElementById('externalscan').value = "";
+          }
+          if(data.startsWith("internal scan: ")){
+            document.getElementById('internalscan').value = data.replace("internal scan: ", "");
+            meSpeak.speak("Internal scan.");
+          }
+          if(data == "cancelinternalscan"){
+            document.getElementById('internalscan').value = "";
+            meSpeak.speak("Internal scan cancelled.");
+          }
+          if(data.startsWith("internal scan answer: ")){
+            document.getElementById('internalscananswer').value = "";
+            document.getElementById('internalscan').value = "";
+          }
+          if(data.startsWith("sensors info: ")){
+            document.getElementById('sensorsinfo').value = "";
+          }
+          if(data.startsWith("hailing: ")){
+            hideSomething('hail')
+            showSomething('disconnectline')
+            document.getElementById('communicationsfrom').value = data.replace("hailing: ", "");
+            sayMainSpeakers = true;
+            meSpeak.speak("Incoming hail.");
+          }
+          if(data == "hailingfd"){
+            hideSomething('hail')
+            showSomething('disconnectline')
+            document.getElementById('communicationsfrom').value = "Operations Has Not Answered Your Hail";
+          }
+          if(data.startsWith("calling: ")){
+            hideSomething('hail')
+            showSomething('disconnectline')
+            document.getElementById('communicationsfrom').value = data.replace("calling: ", "");
+            sayMainSpeakers = true;
+            meSpeak.speak("Incoming call.");
+          }
+          if(data == "disconnectcommunications"){
+            hideSomething('disconnectline')
+            showSomething('hail')
+            document.getElementById('communicationsfrom').value = "";
+            sayMainSpeakers = false;
+            meSpeak.speak("Communications Disconnected.")
+          }
+          if(data == "connectmainspeakers"){
+            document.getElementById('mainspeakers').style.background = "#33CC33";
+            document.getElementById('mainspeakerslabel').innerHTML = "Connected To Main Speakers";
+            meSpeak.speak("Connected to main speakers.");
+          }
+          if(data == "disconnectmainspeakers"){
+            document.getElementById('mainspeakers').style.background = "#FF0000";
+            document.getElementById('mainspeakerslabel').innerHTML = "Not Connected To Main Speakers";
+            setTimeout("if(sayMainSpeakers){meSpeak.speak('Disconnected from main speakers.');}", 100);
+          }
+          if(data == "premessagefd"){
+            document.getElementById('inbox').options.length = 0;
+          }
+          if(data.startsWith("longrangemessagefd: ")){
+        option1 = document.createElement("option");
+        option1.text = data.replace("longrangemessagefd: ", "");
+        document.getElementById('inbox').add(option1);
+            meSpeak.speak("New long range message.");
+          }
+          if(data == "pretransport"){
+            document.getElementById('transportertargets').options.length = 0;
+          }
+          if(data.startsWith("transportertarget: ")){
+        option2 = document.createElement("option");
+        option2.text = data.replace("transportertarget: ", "");
+        document.getElementById('transportertargets').add(option2);
+          }
+          if(data.startsWith("transportedto: ")){
+            transportedTo = data.replace("transportedto: ", "")
+          setTimeout("document.getElementById('transportedto').style.background = '#FFFF00'; document.getElementById('transportedtolabel').innerHTML = transportedTo;", 100);
+            setTimeout("document.getElementById('transportedto').style.background = '#FFFFFF'; document.getElementById('transportedtolabel').innerHTML = '';", 3000);
+            meSpeak.speak("Object transported.");
+        }
+        });
+    </script>
+</head>
+
+
+<body onload="start()">
+  <div style="margin: 10px;">
+    <div id="shipstarted" class="alert alert-dismissable alert-success">
+        <button type="button" class="close" onclick="hideSomething('shipstarted')">X</button>
+        <strong>Ship Has Been Started</strong>
+        <p>The server has been started and the rest of the ship is now functional.</p>
+    </div>
+<div class="navbar navbar-default">
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="flight-director.html">Flight Director Voice</a>
+  </div>
+  <div class="navbar-collapse collapse navbar-responsive-collapse">
+    <ul class="nav navbar-nav">
+      <li><a href="flight-director-voice.html">General</a></li>
+      <li><a href="flight-director-navigations-voice.html">Navigations</a></li>
+      <li class="active"><a href="flight-director-operations-voice.html">Operations</a></li>
+      <li><a href="flight-director-tactical-voice.html">Tactical</a></li>
+      <li><a href="flight-director-engineering-voice.html">Engineering</a></li>
+      <li><a href="flight-director-admiral-voice.html">Admiral</a></li>
+    </ul>
+    <form class="navbar-form navbar-left">
+      <input class="form-control col-lg-8" placeholder="Search" type="text">
+    </form>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="#" onclick="signOut()">Sign Out</a></li>
+    </ul>
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label" for="disabledInput">Operations Name</label>
+  <input id="operationsname" class="form-control" id="disabledInput" placeholder="" disabled="" type="text">
+</div>
+  <div id="scanningexternal" class="form-group" style="width: 750px;">
+      <label for="textArea" class="col-lg-2 control-label">External Scan</label>
+      <div class="col-lg-10">
+        <textarea class="form-control" disabled="" rows="3" id="externalscan"></textarea>
+        <span class="help-block">Operation's external scan.</span>
+      </div>
+    </div>
+  <div id="scanningexternalanswer" class="form-group" style="width: 750px;">
+      <label for="textArea" class="col-lg-2 control-label">External Scan Answer</label>
+      <div class="col-lg-10">
+        <textarea class="form-control" rows="3" id="externalscananswer"></textarea>
+        <span class="help-block">Your external scan answer.</span>
+      </div>
+    <a onclick="sendExternalScanAnswer()" id="scanexternallyanswer" class="btn btn-primary">Send External Scan Answer</a>
+    </div>
+    <div id="scanninginternal" class="form-group" style="width: 750px;">
+      <label for="textArea" class="col-lg-2 control-label">Internal Scan</label>
+      <div class="col-lg-10">
+        <textarea class="form-control" disabled="" rows="3" id="internalscan"></textarea>
+        <span class="help-block">Operation's internal scan.</span>
+      </div>
+  </div>
+  <div id="scanninginternalanswer" class="form-group" style="width: 750px;">
+      <label for="textArea" class="col-lg-2 control-label">Internal Scan Answer</label>
+      <div class="col-lg-10">
+        <textarea class="form-control" rows="3" id="internalscananswer"></textarea>
+        <span class="help-block">Your internal scan answer.</span>
+      </div>
+    <a onclick="sendInternalScanAnswer()" id="scaninternallyanswer" class="btn btn-primary">Send Internal Scan Answer</a>
+  </div>
+  <div id="sensorsinfocontainer" class="form-group" style="width: 750px;">
+      <label for="textArea" class="col-lg-2 control-label">Sensors Info</label>
+      <div class="col-lg-10">
+        <textarea class="form-control" rows="3" id="sensorsinfo"></textarea>
+        <span class="help-block">Sensors info.</span>
+      </div>
+    <a onclick="sendSensorsInfo()" id="sensorsinfobutton" class="btn btn-primary">Send Sensors Info</a>
+    </div>
+  <div class="form-group">
+  <label class="control-label" for="inputLarge">Hailing/Calling From:</label>
+  <input id="communicationsfrom" disabled="" class="form-control input-lg" id="inputLarge" type="text">
+</div>
+  <a onclick="disconnectLine()" id="disconnectline" class="btn btn-danger">Disconnect Communications</a>
+  <a onclick="hail()" id="hail" class="btn btn-primary">Hail Operations</a>
+  <br><br>
+  <p>Main Speakers</p>
+  <div id="mainspeakers" style="background-color: #FFFFFF; width: 100px; height: 75px;">
+    <center>
+      <b><p id="mainspeakerslabel"></p></b>
+      </center>
+  </div>
+  <br>
+  <form class="form-horizontal" style="width:864px;">
+  <fieldset>
+    <legend>Transport Targets</legend>
+    <div class="form-group">
+      <label for="textArea" class="col-lg-2 control-label">Target Name</label>
+      <div class="col-lg-10">
+        <label class="control-label" for="disabledInput">Add Target</label>
+        <input id="transportertargetname" class="form-control" placeholder="" type="text">
+        <br>
+        <button type="button" onclick="addTarget()" class="btn btn-primary">Add Target</button>
+        <br>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="select" class="col-lg-2 control-label">List Of Transporter Targets</label>
+      <div class="col-lg-10">
+        <select id="transportertargets" multiple="" class="form-control">
+        </select>
+        <br>
+        <button type="button" onclick="removeTarget()" class="btn btn-danger">Remove Target</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-lg-10 col-lg-offset-2">
+      </div>
+    </div>
+  </fieldset>
+</form>
+  <br>
+  <p>Latest Transport Destination</p>
+  <div id="transportedto" style="background-color: #FFFFFF; width: 300px; height: 100px;">
+    <center>
+      <b><p id="transportedtolabel"></p></b>
+      </center>
+  </div>
+  <br>
+  <div style="width:864px;" class="form-group">
+            <label for="select" class="col-lg-2 control-label">Message Inbox</label>
+            <div class="col-lg-10">
+                <br>
+                <select id="inbox" multiple="" class="form-control">
+                </select>
+            </div>
+        </div>
+    <button class="btn btn-primary" onclick="viewMessage()">View Message</button>
+    <button class="btn btn-primary" onclick="showSomething('sendmessage')">Send Message</button>
+    <button class="btn btn-danger" onclick="deleteMessage()">Delete Message</button>
+    <br><br><br><br><br><br>
+    <label for="textArea" class="col-lg-2 control-label">Message</label>
+      <div class="col-lg-10">
+        <textarea disabled="" class="form-control" rows="3" id="message"></textarea>
+        <span class="help-block">The long range message that you chose to view.</span>
+      </div>
+ 
+  <div class="modal" id="sendmessage">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="hideSomething('sendmessage'); document.getElementById('longrangemessage').value = '';">×</button>
+        <h4 class="modal-title">Send Long Range Message</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+      <label for="textArea" class="col-lg-2 control-label">Message Contents:</label>
+      <div class="col-lg-10">
+        <textarea class="form-control" id="longrangemessage" rows="10" id="textArea"></textarea>
+        <span class="help-block">The message you want to send.</span>
+      </div>
+    </div>
+<br>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="hideSomething('sendmessage'); document.getElementById('longrangemessage').value = '';" data-dismiss="modal">Close</button>
+        <button type="button" onclick="sendMessage()" class="btn btn-primary">Send Message</button>
+      </div>
+    </div>
+  </div>
+  </div>
+  </div>
+</body>
+</html>

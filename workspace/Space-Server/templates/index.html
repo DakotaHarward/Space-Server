@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Space Server</title>
+  <link rel="stylesheet" href="http://bootswatch.com/cyborg/bootstrap.css">
+    <script src="../static/javascript/jquery-1.11.1.min.js"></script>
+    <script src="../static/javascript/socketio.min.js"></script>
+    <script type="text/javascript">
+       if (typeof String.prototype.startsWith != 'function') {
+  // see below for better implementation!
+  String.prototype.startsWith = function (str){
+    return this.indexOf(str) == 0;
+  };
+}
+        var mission = "nomission";
+        var server = "noserver";
+        var admiralTaken = "no";
+        var engineerTaken = "no";
+        var navigationsTaken = "no";
+        var operationsTaken = "no";
+        var tacticalTaken = "no";
+        var admiralName = "";
+        var engineerName = "";
+        var navigationsName = "";
+        var tacticalName = "";
+        var operationsName = "";
+        var socket = io.connect('http://' +window.location.hostname+ ':' +window.location.port+ '/main');
+        function showSomething(id) {
+		document.getElementById(id).style.display = 'block';
+        }
+        function hideSomething(id) {
+		document.getElementById(id).style.display = 'none';
+        }
+        function hideAll() {
+        hideSomething('noconnection')
+        hideSomething('nomission')
+        hideSomething('YAY')
+        hideSomething('development')
+        hideSomething('wrongpassword')
+        hideSomething('flightdirectorpassword')
+        hideSomething('crew')
+        
+        }
+        function showAll() {
+        showSomething('noconnection')
+        showSomething('nomission')
+        }
+        function startFlightDirector() {
+        hideSomething('main')
+        showSomething('flightdirectorpassword')
+        }
+        function reload() {
+        location.reload()
+        }
+        function logIntoFlightDirector() {
+        if (document.getElementById('password').value == '123456789') {
+            location.href = ('flight-director.html')
+        } else {
+            showSomething('wrongpassword')
+        }
+        }
+        socket.on('message', function(data) {
+        console.log(data);
+        if (data == "connected") {
+        server = "running";
+        hideSomething('noconnection')
+        go()
+        }
+        if (data == "missionyes") {
+        mission = "running";
+        hideSomething('nomission')
+        console.log("mission is running")
+        go()
+        }
+        if (data.startsWith("admiraltaken: ")) {
+        admiralTaken = "yes";
+        goToAdmiral()
+        console.log("admiraltaken")
+        }
+        if (data.startsWith("engineertaken: ")) {
+        engineerTaken = "yes";
+        goToEngineer()
+        console.log("engineertaken")
+        }
+          if(data.startsWith("tacticaltaken: ")) {
+            tacticalTaken = "yes";
+            goToTactical()
+            console.log("tacticaltaken")
+          }
+          if(data.startsWith("operationstaken: ")){
+            operationsTaken = "yes";
+            goToOperations()
+          }
+        });
+        function go() {
+        if (mission == "nomission") {
+            showSomething('nomission')
+            }
+        if (server == "noserver") {
+            showSomething('noconnection')
+            }
+            }
+        function showCrewScreen() {
+            if (mission == "running" && server == "running") {
+                hideSomething('main')
+                showSomething('crew')
+                hideSomething('engineertabs')
+                hideSomething('engineerjobtaken')
+            hideSomething('engineertabcontent')
+            hideSomething('navigationstabs')
+            hideSomething('navigationstabcontent')
+            hideSomething('navigationsjobtaken')
+            hideSomething('tacticaltabs')
+            hideSomething('tacticaltabcontent')
+            hideSomething('tacticaljobtaken')
+            hideSomething('operationstabcontent')
+            hideSomething('operationsjobtaken')
+            hideSomething('operationstabs')
+            if (admiralTaken == "no") {
+            hideSomething('admiraljobtaken')
+            showSomething('admiraltabs')
+            showSomething('admiraltabcontent')
+            } else if (admiralTaken == "yes") {
+            hideSomething('admiraltabcontent')
+            showSomething('admiraltabs')
+            showSomething('admiraljobtaken')
+            }
+            }
+            }
+      function showSoundPortal() {
+        location.href=('sound_portal.html')
+      }
+      function showVideoPortal() {
+        location.href=('video_portal.html')
+      }
+        function goToAdmiral() {
+        if (admiralTaken == "no") {
+            hideSomething('engineertabs')
+            hideSomething('engineertabcontent')
+            hideSomething('engineerjobtaken')
+            hideSomething('admiraljobtaken')
+            hideSomething('navigationstabs')
+            hideSomething('navigationstabcontent')
+            hideSomething('navigationsjobtaken')
+            hideSomething('tacticaltabs')
+            hideSomething('tacticaljobtaken')
+            hideSomething('tacticaltabcontent')
+            hideSomething('operationstabs')
+            hideSomething('operationstabcontent')
+            hideSomething('operationsjobtaken')
+            showSomething('admiraltabs')
+            showSomething('admiraltabcontent')
+            } else if (admiralTaken == "yes") {
+            hideSomething('engineertabs')
+            hideSomething('engineertabcontent')
+            hideSomething('engineerjobtaken')
+            hideSomething('admiraltabcontent')
+            hideSomething('navigationstabs')
+            hideSomething('navigationstabcontent')
+            hideSomething('navigationsjobtaken')
+            hideSomething('tacticaltabs')
+            hideSomething('tacticaljobtaken')
+            hideSomething('tacticaltabcontent')
+            hideSomething('operationstabs')
+            hideSomething('operationstabcontent')
+            hideSomething('operationsjobtaken')
+            showSomething('admiraltabs')
+            showSomething('admiraljobtaken')
+            }
+            }
+        function goToEngineer() {
+        if (engineerTaken == "no") {
+            hideSomething('admiraltabs')
+            hideSomething('admiraltabcontent')
+            hideSomething('admiraljobtaken')
+            hideSomething('engineerjobtaken')
+            hideSomething('navigationstabs')
+            hideSomething('navigationstabcontent')
+            hideSomething('navigationsjobtaken')
+            hideSomething('tacticaltabs')
+            hideSomething('tacticaljobtaken')
+            hideSomething('tacticaltabcontent')
+            hideSomething('operationstabs')
+            hideSomething('operationstabcontent')
+            hideSomething('operationsjobtaken')
+            showSomething('engineertabs')
+            showSomething('engineertabcontent')
+            } else if (engineerTaken == "yes") {
+            hideSomething('admiraltabs')
+            hideSomething('admiraltabcontent')
+            hideSomething('admiraljobtaken')
+            hideSomething('engineertabcontent')
+            hideSomething('navigationstabs')
+            hideSomething('navigationstabcontent')
+            hideSomething('navigationsjobtaken')
+            hideSomething('tacticaltabs')
+            hideSomething('tacticaljobtaken')
+            hideSomething('tacticaltabcontent')
+            hideSomething('operationstabs')
+            hideSomething('operationstabcontent')
+            hideSomething('operationsjobtaken')
+            showSomething('engineertabs')
+            showSomething('engineerjobtaken')
+            }
+            }
+        function goToNavigations() {
+          if (navigationsTaken== "no") {
+            hideSomething('admiraltabs')
+            hideSomething('admiraltabcontent')
+            hideSomething('admiraljobtaken')
+            hideSomething('engineerjobtaken')
+            hideSomething('engineertabs')
+            hideSomething('engineertabcontent')
+            hideSomething('tacticaltabs')
+            hideSomething('tacticaljobtaken')
+            hideSomething('tacticaltabcontent')
+            hideSomething('operationstabs')
+            hideSomething('operationstabcontent')
+            hideSomething('operationsjobtaken')
+            hideSomething('navigationsjobtaken')
+            showSomething('navigationstabs')
+            showSomething('navigationstabcontent')
+          } else {
+            hideSomething('admiraltabs')
+            hideSomething('admiraltabcontent')
+            hideSomething('admiraljobtaken')
+            hideSomething('engineerjobtaken')
+            hideSomething('engineertabs')
+            hideSomething('engineertabcontent')
+            hideSomething('tacticaltabs')
+            hideSomething('tacticaljobtaken')
+            hideSomething('tacticaltabcontent')
+            hideSomething('operationstabs')
+            hideSomething('operationstabcontent')
+            hideSomething('operationsjobtaken')
+            hideSomething('navigationstabcontent')
+            showSomething('navigationstabs')
+            showSomething('navigationsjobtaken')
+          }
+        }
+      function goToTactical() {
+        if (tacticalTaken== "no") {
+            hideSomething('admiraltabs')
+            hideSomething('admiraltabcontent')
+            hideSomething('admiraljobtaken')
+            hideSomething('engineerjobtaken')
+            hideSomething('engineertabs')
+            hideSomething('engineertabcontent')
+            hideSomething('navigationstabs')
+            hideSomething('navigationstabcontent')
+            hideSomething('operationstabs')
+            hideSomething('operationstabcontent')
+            hideSomething('operationsjobtaken')
+            hideSomething('tacticaljobtaken')
+            showSomething('tacticaltabs')
+            showSomething('tacticaltabcontent')
+          } else {
+            hideSomething('admiraltabs')
+            hideSomething('admiraltabcontent')
+            hideSomething('admiraljobtaken')
+            hideSomething('engineerjobtaken')
+            hideSomething('engineertabs')
+            hideSomething('engineertabcontent')
+            hideSomething('navigationstabs')
+            hideSomething('navigationsjobtaken')
+            hideSomething('navigationstabcontent')
+            hideSomething('operationstabs')
+            hideSomething('operationstabcontent')
+            hideSomething('operationsjobtaken')
+            hideSomething('tacticaltabcontent')
+            showSomething('tacticaltabs')
+            showSomething('tacticaljobtaken')
+          }
+      }
+      function goToOperations() {
+        if (operationsTaken== "no") {
+            hideSomething('admiraltabs')
+            hideSomething('admiraltabcontent')
+            hideSomething('admiraljobtaken')
+            hideSomething('engineerjobtaken')
+            hideSomething('engineertabs')
+            hideSomething('engineertabcontent')
+            hideSomething('navigationstabs')
+            hideSomething('navigationstabcontent')
+            hideSomething('tacticaltabs')
+            hideSomething('tacticaltabcontent')
+            hideSomething('tacticaljobtaken')
+            hideSomething('operationsjobtaken')
+            showSomething('operationstabcontent')
+            showSomething('operationstabs')
+          } else {
+            hideSomething('admiraltabs')
+            hideSomething('admiraltabcontent')
+            hideSomething('admiraljobtaken')
+            hideSomething('engineerjobtaken')
+            hideSomething('engineertabs')
+            hideSomething('engineertabcontent')
+            hideSomething('navigationstabs')
+            hideSomething('navigationsjobtaken')
+            hideSomething('navigationstabcontent')
+            hideSomething('tacticaltabs')
+            hideSomething('tacticaltabcontent')
+            hideSomething('tacticaljobtaken')
+            hideSomething('operationstabcontent')
+            showSomething('operationsjobtaken')
+            showSomething('operationstabs')
+          }
+      }
+        function logIntoStation(stationName) {
+                showSomething(stationName + 'login')
+                }
+        function reallyLogIntoStation(stationName) {
+            if (stationName == "admiral") {
+                admiralName = document.getElementById('admiralname').value;
+                socket.send('admiral name: ' + admiralName);
+                console.log(admiralName)
+                hideSomething('admirallogin')
+                document.getElementById('admiralname').value = "";
+                location.href = ('admiral.html')
+                }
+                if (stationName == "engineer") {
+                engineerName = document.getElementById('engineername').value;
+                socket.send('engineer name: ' + engineerName);
+                console.log(engineerName)
+                hideSomething('engineerlogin')
+                document.getElementById('engineername').value = "";
+                location.href = ('engineer.html')
+                }    
+                if (stationName == "navigations") {
+                  navigationsName = document.getElementById('navigationsname').value
+                  socket.send('navigations name: ' + navigationsName);
+                console.log(navigationsName)
+                hideSomething('navigationslogin')
+                document.getElementById('navigationsname').value = "";
+                location.href = ('navigations.html')
+                }
+          if(stationName == "tactical"){
+            tacticalName = document.getElementById('tacticalname').value
+                  socket.send('tactical name: ' + tacticalName);
+                console.log(tacticalName)
+                hideSomething('tacticallogin')
+                document.getElementById('tacticalname').value = "";
+                location.href = ('tactical.html')
+          }
+          if(stationName == "operations"){
+            operationsName = document.getElementById('operationsname').value
+                  socket.send('operations name: ' + operationsName);
+                hideSomething('operationslogin')
+                document.getElementById('operationsname').value = "";
+                location.href = ('operations.html')
+          }
+                }
+            function closeOutOfLoginWindow(stationName) {
+                hideSomething(stationName + 'login') 
+                document.getElementById(stationName + 'name').value = "";
+                }
+    </script>
+</head>
+
+
+<body onload="hideAll()">
+  <div style="margin: 10px">
+    <div id="noconnection" class="alert alert-dismissable alert-warning">
+        <button type="button" class="close" onclick="hideSomething('noconnection')">x</button>
+        <h4>No Connection To Server!</h4>
+        <p>Sadly there is no connection to the server. Ask for assistance from your flight director or try again later.</p>
+    </div>
+    <div id="nomission" class="alert alert-dismissable alert-danger">
+        <button type="button" class="close" onclick="hideSomething('nomission')">x</button>
+        <strong>No Mission!</strong>
+        <p>There is no mission currently running. Please start one as the Flight Director.</p>
+    </div>
+    <div id="YAY" class="alert alert-dismissable alert-success">
+        <button type="button" class="close" onclick="hideSomething('YAY')">x</button>
+        <strong>YAY</strong> 
+        <p>YOU CONNECTED AND READ!!!</p>
+    </div>
+    <div id="development" class="alert alert-dismissable alert-info">
+        <button type="button" class="close" onclick="hideSomething('development')">x</button>
+        <strong>Still In Development</strong>
+        <p>The element you tried to use is not fully functional at the moment. Please try again later.</p>
+    </div>
+    <div id="wrongpassword" class="alert alert-dismissable alert-warning">
+        <button type="button" class="close" onclick="hideSomething('wrongpassword')">x</button>
+        <h4>Wrong Password!</h4>
+        <p>The password that you have enterd is incorrect. Please try again.</p>
+    </div>
+    <div id="flightdirectorpassword" class="form-group">
+        <label class="control-label">Enter Flight Director Password To Log On</label>
+        <div class="input-group">
+            <input id="password" class="form-control" type="password" onkeydown="if (event.keyCode == 13) { logIntoFlightDirector() }">
+            <span class="input-group-btn">
+            <button class="btn btn-default" type="button" onclick="logIntoFlightDirector()">Log In</button>
+            <button class="btn btn-default" type="button" onclick="reload()">Cancel</button>
+            </span>
+        </div>
+    </div>
+    <div id="main" class="jumbotron">
+        <h1>Welcome!</h1>
+        <img src="../static/media/test.png" alt="Space Server Logo" style="">
+        <p>Please choose whether you are the Flight Director or Crew.</p>
+        <p><button class="btn btn-primary btn-lg" onclick="startFlightDirector()">Flight Director</button></p>
+        <p><button class="btn btn-primary btn-lg" onclick="showCrewScreen()">Crew</button></p>
+        <p><button class="btn btn-primary btn-lg" onclick="showSoundPortal()">Sound Portal</button></p>
+      <p><button class="btn btn-primary btn-lg" onclick="showVideoPortal()">Video Portal</button></p>
+    </div>
+    <div id="crew" class="jumbotron">
+        <h1>Please Choose Your Position</h1>
+        <p>Please choose which job you want to be on the ship.</p>
+        <ul id="admiraltabs" class="nav nav-tabs">
+            <li class="active"><a onclick="goToAdmiral()" data-toggle="tab">Admiral</a></li>
+            <li><a onclick="goToEngineer()" data-toggle="tab">Engineer</a></li>
+            <li><a onclick="goToNavigations()" data-toggle="tab">Navigations</a></li>
+          <li><a onclick="goToTactical()" data-toggle="tab">Tactical</a></li>
+          <li><a onclick="goToOperations()" data-toggle="tab">Operations</a></li>
+        </ul>
+        <div id="admiraltabcontent" class="tab-content">
+            <div class="tab-pane fade active in">
+                <p>In charge of leading the ship.</p>
+                <p><button class="btn btn-primary btn-lg" onclick="logIntoStation('admiral')">Choose This Job</button></p>
+            </div>
+        </div>
+        <div id="admiraljobtaken" class="tab-content">
+            <div class="tab-pane fade active in">
+                <p>Job Has Been Taken</p>
+            </div>
+        </div>
+  
+        <ul id="engineertabs" class="nav nav-tabs">
+            <li><a onclick="goToAdmiral()" data-toggle="tab">Admiral</a></li>
+            <li class="active"><a onclick="goToEngineer()" data-toggle="tab">Engineer</a></li>
+            <li><a onclick="goToNavigations()" data-toggle="tab">Navigations</a></li>
+          <li><a onclick="goToTactical()" data-toggle="tab">Tactical</a></li>
+          <li><a onclick="goToOperations()" data-toggle="tab">Operations</a></li>
+        </ul>
+        <div id="engineertabcontent" class="tab-content">
+            <div class="tab-pane fade active in">
+                <p>In charge of damage control, controling power distribution of coolant, and in charge of the reactor</p>
+                <p><button class="btn btn-primary btn-lg" onclick="logIntoStation('engineer')">Choose This Job</button></p>
+            </div>
+        </div>
+        <div id="engineerjobtaken" class="tab-content">
+            <div class="tab-pane fade active in">
+                <p>Job Has Been Taken</p>
+            </div>
+        </div>
+  <ul id="navigationstabs" class="nav nav-tabs">
+            <li><a onclick="goToAdmiral()" data-toggle="tab">Admiral</a></li>
+            <li><a onclick="goToEngineer()" data-toggle="tab">Engineer</a></li>
+            <li class="active"><a onclick="goToNavigations()" data-toggle="tab">Navigations</a></li>
+    <li><a onclick="goToTactical()" data-toggle="tab">Tactical</a></li>
+    <li><a onclick="goToOperations()" data-toggle="tab">Operations</a></li>
+        </ul>
+        <div id="navigationstabcontent" class="tab-content">
+            <div class="tab-pane fade active in">
+                <p>In charge of controlling where the ship goes.</p>
+                <p><button class="btn btn-primary btn-lg" onclick="logIntoStation('navigations')">Choose This Job</button></p>
+            </div>
+        </div>
+        <div id="navigationsjobtaken" class="tab-content">
+            <div class="tab-pane fade active in">
+                <p>Job Has Been Taken</p>
+            </div>
+        </div>
+      <ul id="tacticaltabs" class="nav nav-tabs">
+            <li><a onclick="goToAdmiral()" data-toggle="tab">Admiral</a></li>
+            <li><a onclick="goToEngineer()" data-toggle="tab">Engineer</a></li>
+            <li><a onclick="goToNavigations()" data-toggle="tab">Navigations</a></li>
+    <li class="active"><a onclick="goToTactical()" data-toggle="tab">Tactical</a></li>
+        <li><a onclick="goToOperations()" data-toggle="tab">Operations</a></li>
+        </ul>
+        <div id="tacticaltabcontent" class="tab-content">
+            <div class="tab-pane fade active in">
+                <p>In charge of the weapons systems on the ship.</p>
+                <p><button class="btn btn-primary btn-lg" onclick="logIntoStation('tactical')">Choose This Job</button></p>
+            </div>
+        </div>
+        <div id="tacticaljobtaken" class="tab-content">
+            <div class="tab-pane fade active in">
+                <p>Job Has Been Taken</p>
+            </div>
+        </div>
+      <ul id="operationstabs" class="nav nav-tabs">
+            <li><a onclick="goToAdmiral()" data-toggle="tab">Admiral</a></li>
+            <li><a onclick="goToEngineer()" data-toggle="tab">Engineer</a></li>
+            <li><a onclick="goToNavigations()" data-toggle="tab">Navigations</a></li>
+    <li><a onclick="goToTactical()" data-toggle="tab">Tactical</a></li>
+        <li class="active"><a onclick="goToOperations()" data-toggle="tab">Operations</a></li>
+        </ul>
+        <div id="operationstabcontent" class="tab-content">
+            <div class="tab-pane fade active in">
+                <p>In charge of the busy work around the ship.</p>
+                <p><button class="btn btn-primary btn-lg" onclick="logIntoStation('operations')">Choose This Job</button></p>
+            </div>
+        </div>
+        <div id="operationsjobtaken" class="tab-content">
+            <div class="tab-pane fade active in">
+                <p>Job Has Been Taken</p>
+            </div>
+        </div>
+
+<div id="admirallogin" class="modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button onclick="closeOutOfLoginWindow('admiral')" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title">Log In To The Admiral Station</h4>
+      </div>
+      <div class="modal-body">
+        <p><div class="form-group">
+            <label class="control-label" for="inputDefault">Name</label>
+            <input id="admiralname" class="form-control" id="inputDefault" type="text">
+            </div>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="closeOutOfLoginWindow('admiral')" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="reallyLogIntoStation('admiral')">Login</button>
+      </div>
+    </div>
+  </div>
+  </div>
+
+<div id="engineerlogin" class="modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button onclick="closeOutOfLoginWindow('engineer')" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title">Log In To The Engineering Station</h4>
+      </div>
+      <div class="modal-body">
+        <p><div class="form-group">
+            <label class="control-label" for="inputDefault">Name</label>
+            <input id="engineername" class="form-control" id="inputDefault" type="text">
+            </div>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="closeOutOfLoginWindow('engineer')" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="reallyLogIntoStation('engineer')">Login</button>
+      </div>
+    </div>
+  </div>
+  </div>
+
+<div id="navigationslogin" class="modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button onclick="closeOutOfLoginWindow('navigations')" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title">Log In To The Navigations Station</h4>
+      </div>
+      <div class="modal-body">
+        <p><div class="form-group">
+            <label class="control-label" for="inputDefault">Name</label>
+            <input id="navigationsname" class="form-control" id="inputDefault" type="text">
+            </div>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="closeOutOfLoginWindow('navigations')" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="reallyLogIntoStation('navigations')">Login</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="tacticallogin" class="modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button onclick="closeOutOfLoginWindow('tactical')" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title">Log In To The Tactical Station</h4>
+      </div>
+      <div class="modal-body">
+        <p><div class="form-group">
+            <label class="control-label" for="inputDefault">Name</label>
+            <input id="tacticalname" class="form-control" id="inputDefault" type="text">
+            </div>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="closeOutOfLoginWindow('tactical')" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="reallyLogIntoStation('tactical')">Login</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="operationslogin" class="modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button onclick="closeOutOfLoginWindow('operations')" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title">Log In To The Operations Station</h4>
+      </div>
+      <div class="modal-body">
+        <p><div class="form-group">
+            <label class="control-label" for="inputDefault">Name</label>
+            <input id="operationsname" class="form-control" id="inputDefault" type="text">
+            </div>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="closeOutOfLoginWindow('operations')" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="reallyLogIntoStation('operations')">Login</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</body>
+</html>

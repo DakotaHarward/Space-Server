@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Space Server</title>
+    <link rel="stylesheet" href="http://bootswatch.com/cyborg/bootstrap.css">
+    <script src="../static/javascript/jquery-1.11.1.min.js"></script>
+  <script src="../static/media/mespeak/mespeak.js"></script>
+    <script src="../static/javascript/socketio.min.js"></script>
+  <script src="http://cdn.peerjs.com/0.3/peer.min.js"></script>
+    <script type="text/javascript">
+      meSpeak.loadConfig("static/media/mespeak/mespeak_config.json");
+      meSpeak.loadVoice("static/media/mespeak/voices/en-us.json");
+      meSpeak.speak("Voice mode activated.");
+       if (typeof String.prototype.startsWith != 'function') {
+  // see below for better implementation!
+  String.prototype.startsWith = function (str){
+    return this.indexOf(str) == 0;
+  };
+}
+      var peer = new Peer({key: 'uc4vtixkm9veipb9'});
+        function signOut() {
+        location.href = ('index.html')
+        }
+        function showSomething(id) {
+        document.getElementById(id).style.display = 'block';
+        }
+        function hideSomething(id) {
+        document.getElementById(id).style.display = 'none';
+        }
+        var socket = io.connect('http://' +window.location.hostname+ ':' +window.location.port+ '/main');
+        socket.on('message', function(data) {
+        console.log(data);
+        if(data == "connected") {
+        showSomething('shipstarted');
+        }
+        else if(data == "connected missionyes") {
+        showSomething('shipstarted');
+        }
+        });
+        function startMission() {
+        socket.send('start mission');
+        console.log("mission sent");
+        }
+      function blackout(system) {
+        socket.send("blackout: " + system)
+      }
+      function unblackout(system) {
+        socket.send("unblackout: " + system)
+      }
+      function startBroadcasting() {
+        hideSomething('EVERYTHING')
+        showSomething('broadcasting')
+        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+        navigator.getUserMedia({audio: true, video: true}, function(stream) {
+  var call = peer.call(document.getElementById('peerid').value, stream);
+  call.on('stream', function(remoteStream) {
+    console.log("Called");
+    $('#my-video').prop('src', URL.createObjectURL(remoteStream));
+  });
+}, function(err) {
+  console.log('Failed to get local stream' ,err);
+});
+    }
+      function start() {
+        hideSomething('shipstarted')
+        hideSomething('broadcasting')
+      }
+    </script>
+</head>
+
+
+<body onload="start()">
+  <div id="EVERYTHING" style="margin: 10px;">
+    <div id="shipstarted" class="alert alert-dismissable alert-success">
+        <button type="button" class="close" onclick="hideSomething('shipstarted')">X</button>
+        <strong>Ship Has Been Started</strong>
+        <p>The server has been started and the rest of the ship is now functional.</p>
+    </div>
+<div class="navbar navbar-default">
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="flight-director.html">Flight Director Voice</a>
+  </div>
+  <div class="navbar-collapse collapse navbar-responsive-collapse">
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="flight-director-voice.html">General</a></li>
+      <li><a href="flight-director-navigations-voice.html">Navigations</a></li>
+      <li><a href="flight-director-operations-voice.html">Operations</a></li>
+      <li><a href="flight-director-tactical-voice.html">Tactical</a></li>
+      <li><a href="flight-director-engineering-voice.html">Engineering</a></li>
+      <li><a href="flight-director-admiral-voice.html">Admiral</a></li>
+    </ul>
+    <form class="navbar-form navbar-left">
+      <input class="form-control col-lg-8" placeholder="Search" type="text">
+    </form>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="#" onclick="signOut()">Sign Out</a></li>
+    </ul>
+  </div>
+</div>
+<button class="btn btn-default" onclick="startMission()">Start Mission</button>
+    <button class="btn btn-default" onclick="socket.send('reloadstations')">Reload Stations</button>
+    <a class="btn btn-default" href="flight-director.html">Deactivate Voice Mode</a>
+<br>
+    <br>
+     <div class="btn-group btn-group-justified">
+  <a onclick="socket.send('maincomputeroffline')" class="btn btn-default">Main Computer Offline</a>
+  <a onclick="socket.send('maincomputeronline')" class="btn btn-default">Main Computer Online</a>
+</div>
+  <br>
+  <br>
+  <p>Blackout Stations</p>
+  <div class="btn-group btn-group-justified">
+  <a onclick="blackout('navigations')" class="btn btn-default">Navigations</a>
+  <a onclick="blackout('operations')" class="btn btn-default">Operations</a>
+    <a onclick="blackout('tactical')" class="btn btn-default">Tactical</a>
+    <a onclick="blackout('engineering')" class="btn btn-default">Engineering</a>
+  <a onclick="blackout('admiral')" class="btn btn-default">Admiral</a>
+    <a onclick="blackout('all')" class="btn btn-default">All</a>
+</div>
+  <br>
+  <br>
+  <p>Unblackout Stations</p>
+  <div class="btn-group btn-group-justified">
+  <a onclick="unblackout('navigations')" class="btn btn-default">Navigations</a>
+  <a onclick="unblackout('operations')" class="btn btn-default">Operations</a>
+    <a onclick="unblackout('tactical')" class="btn btn-default">Tactical</a>
+    <a onclick="unblackout('engineering')" class="btn btn-default">Engineering</a>
+  <a onclick="unblackout('admiral')" class="btn btn-default">Admiral</a>
+    <a onclick="unblackout('all')" class="btn btn-default">All</a>
+</div>
+    <br><br>
+    <h5>Destination Peer ID:</h5>
+    <input id="peerid" class="form-control" type="text">
+    <br>
+  <a onclick="startBroadcasting()" class="btn btn-default">Start Broadcasting</a>
+  </div>
+  <div id="broadcasting">
+    <h1>You Are Now Broadcasting</h1>
+    <a onclick="stopBroadcasting()" class="btn btn-default">Stop Broadcasting</a>
+    <div class="pure-u-2-3" id="video-container">
+        <video id="their-video" autoplay></video>
+        <video id="my-video" autoplay></video>
+      </div>
+  </div>
+</body>
+</html>
